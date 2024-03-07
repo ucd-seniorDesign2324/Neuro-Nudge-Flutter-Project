@@ -11,10 +11,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context){
     const String appTitle = 'Neuro Nudge';
     return MaterialApp(
+      // debugShowMaterialGrid: false,
       title: appTitle,
       debugShowCheckedModeBanner: false,
       home: HomePage(items: List<String>.generate(10000, (i) => 'Item $i')),
     );
   }
 }
-

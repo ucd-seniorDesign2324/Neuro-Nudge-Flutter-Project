@@ -19,7 +19,8 @@ class HomePage extends StatelessWidget {
     const String appTitle = 'Neuro Nudge';
     return MaterialApp(
       title: appTitle,
-
+      debugShowCheckedModeBanner: false,
+      // Basic theme. Will be modified down the road.
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         cardTheme: CardTheme(color: Colors.blue.shade50),
@@ -28,13 +29,26 @@ class HomePage extends StatelessWidget {
 
       home: Scaffold(
         appBar: AppBar(
+          leading: IconButton( 
+            icon: const Icon( 
+              Icons.menu,
+              semanticLabel: 'menu',
+            ),
+            onPressed: () {},
+          ),
           centerTitle: true,
           title: const Text(appTitle),
+
+          // TODO: Add search bar
         ),
+
+        // TODO: Add drawer menu
+        
+        // TODO: Add floating action button
         
         body: Center(
           child: ListView.builder(
-          itemCount: items.length, 
+            itemCount: items.length, 
 
             // prototypeItem: ListTile(
             //   title: Text(items.first),
@@ -45,8 +59,12 @@ class HomePage extends StatelessWidget {
                 child: ListTile(
                   leading: const CircleAvatar(child: Text("Sub")),
                   title: Text("Event $index"),
-                  trailing: const Icon(Icons.more_vert),
-                  
+                  subtitle: Text("Task $index"),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.more_vert),
+                    onPressed: () { // Open task management view
+                      // TODO: Add navigation to task management view
+                    },),
                 )
               );
             },
@@ -63,7 +81,7 @@ class HomePage extends StatelessWidget {
 // }
 
 
-// class SideBarView extends StatelessWidget{
+// class DrawerMenuView extends StatelessWidget{
 //   const SideBarView({super.key})
 // }
 
