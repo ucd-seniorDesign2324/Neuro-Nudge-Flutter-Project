@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
 
-      home: HomePage(items: List<String>.generate(10000, (i) => 'Item $i')),
+      home: HomePage(),
     );
   }
 }

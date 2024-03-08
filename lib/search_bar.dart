@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class SearchBarView extends StatefulWidget{
   const SearchBarView({super.key});
 
