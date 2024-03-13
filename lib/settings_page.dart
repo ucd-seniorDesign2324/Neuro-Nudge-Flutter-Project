@@ -22,15 +22,22 @@ class _SettingsPageState extends State<SettingsPage> {
     const String pageName = "Settings";
     return Scaffold( 
       appBar: AppBar( 
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color(0xffF5F5F5),
+        elevation: 5,
+        centerTitle: true,
         title: const Text(
           pageName,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 30.0
-            )
+            fontSize: 30.0,
+            color: Colors.black
+            ),
+          
           ),
         ),
         drawer: drawerMenuBuilder(context),
+        // body: ,
       );
   }
 }
