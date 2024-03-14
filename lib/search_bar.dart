@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-
+// Stateful widget representing a search bar view
 class SearchBarView extends StatefulWidget{
   const SearchBarView({super.key});
 
@@ -8,8 +8,10 @@ class SearchBarView extends StatefulWidget{
   State<SearchBarView> createState() => _SearchBarViewState();
 }
 
+// State class for SearchBarView widget
 class _SearchBarViewState extends State<SearchBarView> {
 
+  // Controller for handling search text input
   final TextEditingController searchController = TextEditingController();
 
   @override

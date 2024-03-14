@@ -4,7 +4,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 
-
+// Stateful widget representing a monthly view
 class MonthlyView extends StatefulWidget {
 
   const MonthlyView({super.key});
@@ -13,6 +13,7 @@ class MonthlyView extends StatefulWidget {
   State<MonthlyView> createState() => _MonthlyViewState();
 }
 
+// State class for monthly view
 class _MonthlyViewState extends State<MonthlyView> {
   static String appTitle = 'Neuro Nudge';
   @override

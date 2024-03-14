@@ -5,10 +5,9 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 
-    // TODO: 
-    // Fetch event data and display on list tiles.
-    // Define page navigations 
-    // Define monthly task view (Separate into own file if you feel so lead)
+// TODO: 
+// Fetch event data and display on list tiles.
+// Define page navigations 
 
 
 class HomePage extends StatefulWidget {
