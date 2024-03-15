@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-
+// Stateful widget representing a search bar view
 class SearchBarView extends StatefulWidget{
   const SearchBarView({super.key});
 
@@ -8,35 +8,51 @@ class SearchBarView extends StatefulWidget{
   State<SearchBarView> createState() => _SearchBarViewState();
 }
 
+// State class for SearchBarView widget
 class _SearchBarViewState extends State<SearchBarView> {
 
+  // Controller for handling search text input
   final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context){
     return Scaffold( 
       appBar: AppBar( 
-        title: TextField( 
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color(0xffF5F5F5),
+        toolbarHeight: 80,
 
-          controller: searchController,
-
-          decoration: InputDecoration( 
-            filled: true,
-            fillColor: const Color(0xffF5F5F5),
-            contentPadding: const EdgeInsets.all(12),
-            hintText: "Search",
-            hintStyle: const TextStyle( 
-              color: Colors.grey,
-              fontSize: 15
-            ),
-
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none
-            )
-          ),
-        ),
-      ),
+        // Search bar builder
+        title: SearchAnchor(
+        builder: (BuildContext context, SearchController controller){
+          return SearchBar( 
+            controller: controller,
+            hintText: 'Search',
+            hintStyle: const MaterialStatePropertyAll<TextStyle>(TextStyle(fontSize: 20)),
+            padding: const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
+            onTap: (){
+              controller.openView();
+            },
+            onChanged: (_){
+              controller.openView();
+            },
+          );
+        },
+        suggestionsBuilder: (BuildContext context, SearchController controller){
+          return List<ListTile>.generate(5,(int index){
+            final String item = 'item $index';
+            return ListTile(
+              title:Text(item),
+              onTap: () {
+                setState(() {
+                  controller.closeView(item);
+                });
+              },
+            );
+          });
+        },),
+      ), 
     );
   }
 }

@@ -1,56 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 
-// TODO: 
-// Fetch event data and display on list tiles.
-// Define page navigations 
+// Stateful widget representing a monthly view
+class MonthlyView extends StatefulWidget {
 
-
-class HomePage extends StatefulWidget {
-
-  const HomePage({super.key});
+  const MonthlyView({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MonthlyView> createState() => _MonthlyViewState();
 }
 
-class _HomePageState extends State<HomePage> {
-
-  final FloatingSearchBarController controller = FloatingSearchBarController();
-
+// State class for monthly view
+class _MonthlyViewState extends State<MonthlyView> {
+  static String appTitle = 'Neuro Nudge';
   @override
   Widget build(BuildContext context){
-    const String appTitle = 'NeuroNudge';
     return Scaffold(
 
-        appBar: appBarBuilder(context, appTitle),
+      appBar: appBarBuilder(context, appTitle),
 
-        drawer: drawerMenuBuilder(context),
-        
-        // 
-        body: SfCalendar(
-          view: CalendarView.schedule,
-          dataSource: MeetingDataSource(_getDataSource()),
-          headerStyle: const CalendarHeaderStyle(
-            textAlign: TextAlign.center,
-            ),
+      drawer: drawerMenuBuilder(context),
 
+      body: SfCalendar(
+        view: CalendarView.month,
 
-
-          scheduleViewSettings: const ScheduleViewSettings( 
-            appointmentItemHeight: 100,
-            appointmentTextStyle: TextStyle( 
-              fontSize: 20,
-            )
+        headerStyle: const CalendarHeaderStyle(
+          textAlign: TextAlign.center,
           ),
-        ),
-      
 
-        floatingActionButton: FloatingActionButton( 
+        showNavigationArrow: true,
+        dataSource: MeetingDataSource(_getDataSource()),
+        monthViewSettings: const MonthViewSettings( 
+          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+        ),
+
+      ),
+
+      floatingActionButton: FloatingActionButton( 
           backgroundColor: Colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           onPressed: (){
@@ -60,14 +49,13 @@ class _HomePageState extends State<HomePage> {
           child: const Icon(
             Icons.add,
             color: Colors.white,
-            size: 45,
-          )
+            size: 45,)
         ),
-      );
+
+    );
   }
-
-
 }
+
 
 // ######################################################################################
 // 
