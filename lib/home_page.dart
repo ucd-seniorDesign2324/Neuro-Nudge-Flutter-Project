@@ -4,6 +4,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
+import 'package:nn/task_management_view.dart';
 
 // TODO: 
 // Fetch event data and display on list tiles.
@@ -54,7 +55,11 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           onPressed: (){
-            const Placeholder();
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TaskManagementView()),
+            );
           },
           
           child: const Icon(
