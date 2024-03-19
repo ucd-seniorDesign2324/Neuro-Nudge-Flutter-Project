@@ -1,0 +1,7 @@
+{
+  "name": "Flutter & Android & Python Development",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "remoteUser": "developer"
+}
