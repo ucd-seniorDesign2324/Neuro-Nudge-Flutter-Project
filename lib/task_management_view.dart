@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nn/methods/drawer_menu.dart';
-import 'package:nn/settings_page.dart';
+// import 'package:nn/settings_page.dart';
+import 'package:nn/methods/evt_type_dropdown.dart';
+import 'package:nn/methods/alarm_dropdown.dart';
 
 // TODO:
 // Define class for adding task
@@ -39,7 +41,6 @@ class TaskManagementView extends StatelessWidget {
 }
 
 
-
 class TaskEditMenu extends StatefulWidget {
   const TaskEditMenu({super.key});
 
@@ -55,15 +56,21 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Title',
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                hintText: 'Title',
+              ),
             ),
           ),
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Type',
-            ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: EventTypeDropdown(),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: AlarmDropdown(),
           ),
         ],
       )
