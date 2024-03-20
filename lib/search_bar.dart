@@ -29,6 +29,8 @@ class _SearchBarViewState extends State<SearchBarView> {
           return SearchBar( 
             controller: controller,
             hintText: 'Search',
+            hintStyle: const MaterialStatePropertyAll<TextStyle>(TextStyle(fontSize: 20)),
+            padding: const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
             onTap: (){
               controller.openView();
             },
@@ -37,7 +39,6 @@ class _SearchBarViewState extends State<SearchBarView> {
             },
           );
         },
-        
         suggestionsBuilder: (BuildContext context, SearchController controller){
           return List<ListTile>.generate(5,(int index){
             final String item = 'item $index';

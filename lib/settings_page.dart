@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nn/methods/drawer_menu.dart';
 
 // Stateless widget represnting the settings page
@@ -50,42 +49,10 @@ class DropDownMenu extends StatefulWidget{
   State<DropDownMenu> createState() => _DropDownMenuState();
 }
 
-
 // State class for DropDownMenu widget
 class _DropDownMenuState extends State<DropDownMenu> {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
-  String startHourValue = "";
-  String startMeridiemValue = "";
-  String endHourValue = "";
-  String endMeridiemValue = "";
-
-  // Load time restriction values if previously set. Otherwise load default values.
-  Future<void> _loadPreferences() async {
-    final SharedPreferences prefs = await _prefs;
-    
-    setState(() {
-      startHourValue =     prefs.getString('startHour') ?? hours.first;
-      startMeridiemValue = prefs.getString('startMeridiem') ?? meridiem.first;
-      endHourValue =       prefs.getString('endHour') ?? hours.first;
-      endMeridiemValue =   prefs.getString('endMeridiem') ?? meridiem.first;
-    });
-  }
-
-  void _savePreferences() async {
-    final prefs = await _prefs;
-
-    await prefs.setString('startHour', startHourValue);
-    await prefs.setString('startMeridiem', startMeridiemValue);
-    await prefs.setString('endHour', endHourValue);
-    await prefs.setString('endMeridiem', endMeridiemValue);
-  }
-
-  @override
-  void initState(){
-    super.initState();
-    _loadPreferences();
-  }
+  String hourValues = hours.first;
+  String meridiemValues = meridiem.first;
 
   @override
   Widget build(BuildContext context){
@@ -130,20 +97,18 @@ class _DropDownMenuState extends State<DropDownMenu> {
 
               // Start time dropdown
               DropdownButton( 
-                value:     startHourValue,
-                icon:      const Icon(Icons.arrow_drop_down),
+                value: hourValues,
+                icon: const Icon(Icons.arrow_drop_down),
                 elevation: 10,
-                style:     const TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
                 underline: Container( 
                   height: 2,
                   color: Colors.grey,
                 ),
-                onChanged: (String? value) {
+                onChanged: (String? value){
                   setState(() {
-                    startHourValue = value!;
+                    hourValues = value!;
                   });
-
-                  _savePreferences();
                 },
                 items: hours.map<DropdownMenuItem<String>>((String value){
                   return DropdownMenuItem<String>(
@@ -157,20 +122,18 @@ class _DropDownMenuState extends State<DropDownMenu> {
 
               // Meridiem dropdown for start time
               DropdownButton( 
-                value:     startMeridiemValue,
-                icon:      const Icon(Icons.arrow_drop_down),
+                value: meridiemValues,
+                icon: const Icon(Icons.arrow_drop_down),
                 elevation: 10,
-                style:     const TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
                 underline: Container( 
                   height: 2,
                   color: Colors.grey,
                 ),
-                onChanged: (String? value) {
+                onChanged: (String? value){
                   setState(() {
-                    startMeridiemValue = value!;
+                    meridiemValues = value!;
                   });
-
-                  _savePreferences();
                 },
                 items: meridiem.map<DropdownMenuItem<String>>((String value){
                   return DropdownMenuItem<String>(
@@ -186,20 +149,18 @@ class _DropDownMenuState extends State<DropDownMenu> {
 
               // End time dropdown
               DropdownButton( 
-                value:     endHourValue,
-                icon:      const Icon(Icons.arrow_drop_down),
+                value: hourValues,
+                icon: const Icon(Icons.arrow_drop_down),
                 elevation: 10,
-                style:     const TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
                 underline: Container( 
                   height: 2,
                   color: Colors.grey,
                 ),
-                onChanged: (String? value) {
+                onChanged: (String? value){
                   setState(() {
-                    endHourValue = value!;
+                    hourValues = value!;
                   });
-
-                  _savePreferences();
                 },
                 items: hours.map<DropdownMenuItem<String>>((String value){
                   return DropdownMenuItem<String>(
@@ -213,20 +174,18 @@ class _DropDownMenuState extends State<DropDownMenu> {
 
               // Meridiem dropdown for end time
               DropdownButton( 
-                value:     endMeridiemValue,
-                icon:      const Icon(Icons.arrow_drop_down),
+                value: meridiem.last,
+                icon: const Icon(Icons.arrow_drop_down),
                 elevation: 10,
-                style:     const TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
                 underline: Container( 
                   height: 2,
                   color: Colors.grey,
                 ),
                 onChanged: (String? value){
                   setState(() {
-                    endMeridiemValue = value!;
+                    meridiemValues = value!;
                   });
-
-                  _savePreferences();
                 },
                 items: meridiem.map<DropdownMenuItem<String>>((String value){
                   return DropdownMenuItem<String>(
