@@ -8,6 +8,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:921813581612:android:ad2cc80889b02845edf689",
+        "android_client_info": {
+          "package_name": "com.example.nn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "921813581612-mm41tm2eccthd2a4h12v7s8hnkjuvg73.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiExFR0f-4AkzYI0ZNhavxcC-FDfblDUs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "921813581612-mm41tm2eccthd2a4h12v7s8hnkjuvg73.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:921813581612:android:2aa7af7f673a86d2edf689",
         "android_client_info": {
           "package_name": "com.neuro.nudge"
