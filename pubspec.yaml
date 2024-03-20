@@ -40,9 +40,14 @@ dependencies:
   implicitly_animated_reorderable_list_2: ^0.5.1
   provider: ^6.1.2
   syncfusion_flutter_calendar: ^24.2.9
+
+  gap: ^3.0.1
+  shared_preferences: ^2.2.2
+
   firebase_core: ^2.27.1
   cloud_firestore: ^4.15.9
   firebase_auth: ^4.17.9
+
 
 dev_dependencies:
   flutter_test:
