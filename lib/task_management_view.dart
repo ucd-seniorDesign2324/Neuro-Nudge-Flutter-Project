@@ -20,21 +20,24 @@ class TaskManagementView extends StatelessWidget {
         backgroundColor: const Color(0xffF5F5F5),
         elevation: 5,
         actions: [
-          IconButton(
-            //Do we need this, or is back button enough?
-            onPressed: () {
+          // IconButton(
+          //   //Do we need this, or is back button enough?
+          //   onPressed: () {
 
-            }, 
-            icon: const Icon(Icons.close)),
-          IconButton(
-            onPressed: () {
-
-            }, 
-            icon: const Icon(Icons.save)),
+          //   }, 
+          //   icon: const Icon(Icons.close)),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              onPressed: () {
+            
+              }, 
+              icon: const Icon(Icons.save)),
+          ),
         ],
         
       ),
-      drawer: drawerMenuBuilder(context),
+      // drawer: drawerMenuBuilder(context),
       body: const TaskEditMenu(),
     );
   }

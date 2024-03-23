@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           onPressed: (){
-            Navigator.pop(context);
+            // Navigator.pop(context); //Don't need this then??
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const TaskManagementView()),
