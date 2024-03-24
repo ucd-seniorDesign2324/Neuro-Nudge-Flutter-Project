@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nn/settings_page.dart';
 import 'package:nn/home_page.dart';
 import 'package:nn/monthly_view.dart';
+import 'package:nn/import_calendar_page.dart';
 import 'package:gap/gap.dart';
 
 Drawer drawerMenuBuilder(BuildContext context) {
@@ -105,6 +106,28 @@ Drawer drawerMenuBuilder(BuildContext context) {
                 onTap: (){
                 Navigator.pop(context);
                 },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.import_contacts,
+                size: 40,
+              ),
+              title: const Center(
+                child: Text(
+                  'Import',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30.0
+                  )
+                )
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ImportCalendarPage()),
+                );
+              },
             ),
 
             
