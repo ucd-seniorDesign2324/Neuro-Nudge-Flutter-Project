@@ -129,28 +129,6 @@ Drawer drawerMenuBuilder(BuildContext context) {
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(
-                Icons.import_contacts,
-                size: 40,
-              ),
-              title: const Center(
-                child: Text(
-                  'Import',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30.0
-                  )
-                )
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ImportCalendarPage()),
-                );
-              },
-            ),
 
             
             Expanded(
