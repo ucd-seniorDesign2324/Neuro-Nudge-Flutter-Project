@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:nn/methods/drawer_menu.dart';
-// import 'package:nn/settings_page.dart';
 import 'package:nn/methods/evt_type_dropdown.dart';
 import 'package:nn/methods/alarm_dropdown.dart';
+// import 'package:nn/methods/sub_task_dropdown.dart';
 
 // TODO:
 // Define class for adding task
 // Create methods for entering task data. I.e., task name, type, subtasks, etc
 // Implement callback methods for user interactions. I.e., onTouch()
-class TaskManagementView extends StatelessWidget {
-  const TaskManagementView({super.key});
+class NewTaskView extends StatelessWidget {
+  const NewTaskView({super.key});
 
   @override
   Widget build(BuildContext context){
@@ -37,6 +36,7 @@ class TaskManagementView extends StatelessWidget {
         ],
         
       ),
+      //TODO: remove?
       // drawer: drawerMenuBuilder(context),
       body: const TaskEditMenu(),
     );
@@ -75,16 +75,9 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
             padding: EdgeInsets.all(8.0),
             child: AlarmDropdown(),
           ),
+          // const SubTaskDropdown(),
         ],
       )
     );
   }
 }
-
-
-/*
-const Divider(
-              color: Colors.grey,
-              indent: 10,
-              endIndent: 10,
-            ),*/
