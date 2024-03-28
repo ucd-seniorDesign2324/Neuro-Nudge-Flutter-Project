@@ -36,8 +36,6 @@ class NewTaskView extends StatelessWidget {
         ],
         
       ),
-      //TODO: remove?
-      // drawer: drawerMenuBuilder(context),
       body: const TaskEditMenu(),
     );
   }
