@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         
         // 
         body: SfCalendar(
-          view: CalendarView.month,
+          view: CalendarView.schedule,
           dataSource: AppointmentDataSource(_getDataSource()),
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,

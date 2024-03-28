@@ -33,7 +33,7 @@ class _DailyViewState extends State<DailyView> {
           ),
 
         showNavigationArrow: true,
-        dataSource: MeetingDataSource(_getDataSource()),
+        dataSource: AppointmentDataSource(_getDataSource()),
         timeSlotViewSettings: const TimeSlotViewSettings( 
           startHour: 8,
           endHour: 21,
@@ -69,18 +69,25 @@ class _DailyViewState extends State<DailyView> {
 //
 // ######################################################################################
 
-List<Meeting> _getDataSource(){
-  final List<Meeting> meetings = <Meeting>[];
-  final DateTime today = DateTime.now();
-  final DateTime startTime = DateTime(today.year, today.month, today.day, 9, 0, 0);
-  final DateTime endTime = startTime.add(const Duration(hours: 2));
+List<Appointment> _getDataSource(){
+  final List<Appointment> meetings = <Appointment>[];
+  DateTime today = DateTime.now();
+  DateTime startTime = DateTime(today.year, today.month, today.day, 9, 0, 0);
+  DateTime endTime = startTime.add(const Duration(hours: 2));
 
-  meetings.add(Meeting('Conference', startTime, endTime, const Color(0xFF0F8644), false));
+  meetings.add(Appointment(subject: 'Conference', startTime:startTime, endTime:endTime,color: const Color(0xFF0F8644)));
+
+  today = DateTime.now();
+  startTime = DateTime(today.year, today.month, today.day, 13, 0, 0);
+  endTime = startTime.add(const Duration(hours: 2));
+  meetings.add(Appointment(subject: 'Table', startTime:startTime, endTime:endTime,color: const Color.fromARGB(255, 134, 43, 15)));
+
+
   return meetings;
 }
 
-class MeetingDataSource extends CalendarDataSource{
-  MeetingDataSource(List<Meeting> source){
+class AppointmentDataSource extends CalendarDataSource{
+  AppointmentDataSource(List<Appointment> source){
     appointments = source;
   }
 
