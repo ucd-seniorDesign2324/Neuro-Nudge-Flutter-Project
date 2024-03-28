@@ -4,7 +4,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
-import 'package:nn/new_task_view.dart';
+import 'package:nn/presentation/new_task_view.dart';
 
 // TODO: 
 // Fetch event data and display on list tiles.

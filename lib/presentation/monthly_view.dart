@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import 'package:nn/presentation/new_task_view.dart';
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 
@@ -25,7 +26,7 @@ class _MonthlyViewState extends State<MonthlyView> {
       drawer: drawerMenuBuilder(context),
 
       body: SfCalendar(
-        view: CalendarView.timelineDay,
+        view: CalendarView.month,
 
         headerStyle: const CalendarHeaderStyle(
           textAlign: TextAlign.center,
@@ -33,10 +34,8 @@ class _MonthlyViewState extends State<MonthlyView> {
 
         showNavigationArrow: true,
         dataSource: MeetingDataSource(_getDataSource()),
-        timeSlotViewSettings: const TimeSlotViewSettings( 
-          startHour: 8,
-          endHour: 21,
-          numberOfDaysInView: 1
+        monthViewSettings: const MonthViewSettings( 
+          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
         ),
 
       ),
@@ -45,7 +44,10 @@ class _MonthlyViewState extends State<MonthlyView> {
           backgroundColor: Colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           onPressed: (){
-            const Placeholder();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NewTaskView())
+            );
           },
           
           child: const Icon(

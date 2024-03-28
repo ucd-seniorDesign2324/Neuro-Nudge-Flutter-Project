@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nn/search_bar.dart';
+import 'package:nn/presentation/search_bar.dart';
 
 
 AppBar appBarBuilder(BuildContext context, String appTitle) {

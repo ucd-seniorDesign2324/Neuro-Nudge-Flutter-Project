@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import 'package:nn/presentation/new_task_view.dart';
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 
 // Stateful widget representing a monthly view
-class MonthlyView extends StatefulWidget {
+class DailyView extends StatefulWidget {
 
-  const MonthlyView({super.key});
+  const DailyView({super.key});
 
   @override
-  State<MonthlyView> createState() => _MonthlyViewState();
+  State<DailyView> createState() => _DailyViewState();
 }
 
 // State class for monthly view
-class _MonthlyViewState extends State<MonthlyView> {
+class _DailyViewState extends State<DailyView> {
   static String appTitle = 'Neuro Nudge';
   @override
   Widget build(BuildContext context){
@@ -25,7 +26,7 @@ class _MonthlyViewState extends State<MonthlyView> {
       drawer: drawerMenuBuilder(context),
 
       body: SfCalendar(
-        view: CalendarView.month,
+        view: CalendarView.timelineDay,
 
         headerStyle: const CalendarHeaderStyle(
           textAlign: TextAlign.center,
@@ -33,8 +34,10 @@ class _MonthlyViewState extends State<MonthlyView> {
 
         showNavigationArrow: true,
         dataSource: MeetingDataSource(_getDataSource()),
-        monthViewSettings: const MonthViewSettings( 
-          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+        timeSlotViewSettings: const TimeSlotViewSettings( 
+          startHour: 8,
+          endHour: 21,
+          numberOfDaysInView: 1
         ),
 
       ),
@@ -43,7 +46,10 @@ class _MonthlyViewState extends State<MonthlyView> {
           backgroundColor: Colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           onPressed: (){
-            const Placeholder();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NewTaskView())
+            );
           },
           
           child: const Icon(

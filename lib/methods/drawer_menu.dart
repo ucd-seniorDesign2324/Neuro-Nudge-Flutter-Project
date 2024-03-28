@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nn/settings_page.dart';
-import 'package:nn/home_page.dart';
-import 'package:nn/monthly_view.dart';
-import 'package:nn/import_calendar_page.dart';
+import 'package:nn/presentation/settings_page.dart';
+import 'package:nn/presentation/home_page.dart';
+import 'package:nn/presentation/monthly_view.dart';
+import 'package:nn/presentation/import_calendar_page.dart';
 import 'package:gap/gap.dart';
 
 Drawer drawerMenuBuilder(BuildContext context) {
@@ -52,10 +52,10 @@ Drawer drawerMenuBuilder(BuildContext context) {
                   )
                 ),
                 onTap: (){
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MonthlyView()),
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MonthlyView()),
                 );
               }
             ),
