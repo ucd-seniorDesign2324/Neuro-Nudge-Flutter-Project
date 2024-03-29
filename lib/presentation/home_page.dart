@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -23,6 +24,11 @@ class _HomePageState extends State<HomePage> {
 
   final FloatingSearchBarController controller = FloatingSearchBarController();
 
+  String? _subjectText = '', _startTimeText = '',
+          _endTimeText = '', _dateText = '', 
+          _timeDetails = '';
+
+
   @override
   Widget build(BuildContext context){
     const String appTitle = 'NeuroNudge';
@@ -34,13 +40,11 @@ class _HomePageState extends State<HomePage> {
         
         // 
         body: SfCalendar(
-          view: CalendarView.month,
-          dataSource: AppointmentDataSource(_getDataSource()),
+          view: CalendarView.schedule,
+
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,
-            ),
-          //TODO: on tap: show event, onLongPressed: edit event
-
+          ),
 
           scheduleViewSettings: const ScheduleViewSettings( 
             appointmentItemHeight: 100,
@@ -48,6 +52,13 @@ class _HomePageState extends State<HomePage> {
               fontSize: 20,
             )
           ),
+
+          dataSource: AppointmentDataSource(_getDataSource()),
+          
+          onTap: calendarTapped,
+          // onLongPress: ,
+          //TODO: onLongPressed: edit event
+          
         ),
       
 
@@ -70,8 +81,82 @@ class _HomePageState extends State<HomePage> {
       );
   }
 
+  void calendarTapped(CalendarTapDetails details) {
+    if (details.targetElement == CalendarElement.appointment ||
+        details.targetElement == CalendarElement.agenda) {
+      final Appointment appointmentDetails = details.appointments![0];
+      _subjectText = appointmentDetails.subject;
+      _dateText = DateFormat('MMMM dd, yyyy')
+          .format(appointmentDetails.startTime).toString();
+      _startTimeText =
+          DateFormat('hh:mm a').format(appointmentDetails.startTime).toString();
+      _endTimeText =
+          DateFormat('hh:mm a').format(appointmentDetails.endTime).toString();
+      _timeDetails = '$_startTimeText - $_endTimeText';
+    } else if (details.targetElement == CalendarElement.calendarCell) {
+      _subjectText = "You have tapped cell";
+      _dateText = DateFormat('MMMM dd, yyyy').format(details.date!).toString();
+      _timeDetails = '';
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('$_subjectText'),
+          content: SizedBox(
+            height: 80,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Text(
+                      '$_dateText',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 40,
+                    child: Row(
+                      children: <Widget>[
+                        Text(_timeDetails!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400, fontSize: 15)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                const Placeholder();
+                },
+                child: const Text('Delete')),
+            TextButton(
+              onPressed: () {
+                const Placeholder();
+                },
+                child: const Text('Edit')),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                },
+                child: const Text('Close'))
+          ],
+        );
+      }
+    );
+  }
 }
+
 
 // ######################################################################################
 // 

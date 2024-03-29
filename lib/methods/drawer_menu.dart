@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:nn/presentation/daily_view.dart';
 import 'package:nn/presentation/settings_page.dart';
 import 'package:nn/presentation/home_page.dart';
 import 'package:nn/presentation/monthly_view.dart';
@@ -34,6 +36,10 @@ Drawer drawerMenuBuilder(BuildContext context) {
 
               onTap: (){
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                      MaterialPageRoute(builder: (context) => const DailyView())
+                );
               },
             ),
               
