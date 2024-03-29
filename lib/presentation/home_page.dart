@@ -21,12 +21,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FloatingSearchBarController controller = FloatingSearchBarController();
 
-  Future<List<Appointment>> _getDataSource() async {
-    // Your logic to load and parse the calendar data
-    // For example, this could be loading from a file or fetching from a network
-    return [];
-  }
-
   @override
   Widget build(BuildContext context) {
     const String appTitle = 'NeuroNudge';
@@ -37,13 +31,13 @@ class _HomePageState extends State<HomePage> {
         future: _getDataSource(), // Call the async function to get the data
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // While waiting for the data, show a loading indicator
+            // show a loading indicator while waiting for data to come back
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             // show an error if it didn't load
             return Center(child: Text('Error loading data'));
           } else {
-            // Once the data is loaded, create the SfCalendar with it
+            // once loaded correctly, build the calendar
             return SfCalendar(
               view: CalendarView.schedule,
               dataSource: AppointmentDataSource(snapshot.data!),
@@ -87,26 +81,34 @@ class _HomePageState extends State<HomePage> {
 // ######################################################################################
 
 Future<List<Appointment>> _getDataSource() async {
+  print("Accessing load process.");
   Map<String, dynamic> calendarData = await loadIcsFile();
   List<dynamic> eventData = calendarData['data'];
   List<Appointment> appointments = [];
 
   for (var event in eventData) {
-    DateTime startTime = DateTime.parse(event['dtstart']['dt']);
-    print(startTime);
-    DateTime endTime = DateTime.parse(event['dtend']['dt']);
-    print(endTime);
-    String subject = event['summary'];
-    // Assuming you have a default color or logic to determine the color
-    Color color = Colors.blue; // Example: default color
+    print('checked');
+    // Only create an Appointment if the event entry is a VEVENT
+    // Check if the event has a 'type' key and if its value is 'VEVENT'
+    if (event.containsKey('type') && event['type'] == 'VEVENT') {
+      print('check passed');
+      print(event);
+      DateTime startTime = DateTime.parse(event['dtstart']['dt']);
+      DateTime endTime = DateTime.parse(event['dtend']['dt']);
+      String subject = 'class';
+      // String notes = event['description'];
+      Color color = Colors.blue;
 
-    appointments.add(Appointment(
-      startTime: startTime,
-      endTime: endTime,
-      subject: subject,
-      color: color,
-      // Add other fields if necessary
-    ));
+      
+      appointments.add(Appointment(
+        startTime: startTime,
+        endTime: endTime,
+        subject: subject,
+        // notes: notes,
+        color: color,
+        // Add other fields as we need them. Just did a few to start.
+      ));
+    }
   }
 
   return appointments;
