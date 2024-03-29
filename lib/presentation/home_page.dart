@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 import 'package:nn/presentation/new_task_view.dart';
+import 'package:nn/methods/load_ics_file.dart';
 
-// TODO: 
+// TODO:
 // Fetch event data and display on list tiles.
-// Define page navigations 
-
+// Define page navigations
 
 class HomePage extends StatefulWidget {
 
@@ -20,110 +19,126 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final FloatingSearchBarController controller = FloatingSearchBarController();
 
-  @override
-  Widget build(BuildContext context){
-    const String appTitle = 'NeuroNudge';
-    return Scaffold(
-
-        appBar: appBarBuilder(context, appTitle),
-
-        drawer: drawerMenuBuilder(context),
-        
-        // 
-        body: SfCalendar(
-          view: CalendarView.schedule,
-          dataSource: AppointmentDataSource(_getDataSource()),
-          headerStyle: const CalendarHeaderStyle(
-            textAlign: TextAlign.center,
-            ),
-          //TODO: on tap: show event, onLongPressed: edit event
-
-
-          scheduleViewSettings: const ScheduleViewSettings( 
-            appointmentItemHeight: 100,
-            appointmentTextStyle: TextStyle( 
-              fontSize: 20,
-            )
-          ),
-        ),
-      
-
-        floatingActionButton: FloatingActionButton( 
-          backgroundColor: Colors.black,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          onPressed: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const NewTaskView()),
-            );
-          },
-          
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 45,
-          )
-        ),
-      );
+  Future<List<Appointment>> _getDataSource() async {
+    // Your logic to load and parse the calendar data
+    // For example, this could be loading from a file or fetching from a network
+    return [];
   }
 
-
+  @override
+  Widget build(BuildContext context) {
+    const String appTitle = 'NeuroNudge';
+    return Scaffold(
+      appBar: appBarBuilder(context, appTitle),
+      drawer: drawerMenuBuilder(context),
+      body: FutureBuilder<List<Appointment>>(
+        future: _getDataSource(), // Call the async function to get the data
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // While waiting for the data, show a loading indicator
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            // show an error if it didn't load
+            return Center(child: Text('Error loading data'));
+          } else {
+            // Once the data is loaded, create the SfCalendar with it
+            return SfCalendar(
+              view: CalendarView.schedule,
+              dataSource: AppointmentDataSource(snapshot.data!),
+              headerStyle: const CalendarHeaderStyle(
+                textAlign: TextAlign.center,
+              ),
+              scheduleViewSettings: const ScheduleViewSettings(
+                appointmentItemHeight: 100,
+                appointmentTextStyle: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewTaskView()),
+          );
+        },
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 45,
+        ),
+      ),
+    );
+  }
 }
 
+
 // ######################################################################################
-// 
+//
 //  The following code creates an event for the calendar view. Used for testing
 //
 // ######################################################################################
 
-List<Appointment> _getDataSource(){
-  final List<Appointment> meetings = <Appointment>[];
-  DateTime today = DateTime.now();
-  DateTime startTime = DateTime(today.year, today.month, today.day, 9, 0, 0);
-  DateTime endTime = startTime.add(const Duration(hours: 2));
+Future<List<Appointment>> _getDataSource() async {
+  Map<String, dynamic> calendarData = await loadIcsFile();
+  List<dynamic> eventData = calendarData['data'];
+  List<Appointment> appointments = [];
 
-  meetings.add(Appointment(subject: 'Conference', startTime:startTime, endTime:endTime,color: const Color(0xFF0F8644)));
+  for (var event in eventData) {
+    DateTime startTime = DateTime.parse(event['dtstart']['dt']);
+    print(startTime);
+    DateTime endTime = DateTime.parse(event['dtend']['dt']);
+    print(endTime);
+    String subject = event['summary'];
+    // Assuming you have a default color or logic to determine the color
+    Color color = Colors.blue; // Example: default color
 
-  today = DateTime.now();
-  startTime = DateTime(today.year, today.month, today.day, 13, 0, 0);
-  endTime = startTime.add(const Duration(hours: 2));
-  meetings.add(Appointment(subject: 'Table', startTime:startTime, endTime:endTime,color: const Color.fromARGB(255, 134, 43, 15)));
+    appointments.add(Appointment(
+      startTime: startTime,
+      endTime: endTime,
+      subject: subject,
+      color: color,
+      // Add other fields if necessary
+    ));
+  }
 
-
-  return meetings;
+  return appointments;
 }
 
-class AppointmentDataSource extends CalendarDataSource{
-  AppointmentDataSource(List<Appointment> source){
+class AppointmentDataSource extends CalendarDataSource {
+  AppointmentDataSource(List<Appointment> source) {
     appointments = source;
   }
 
   @override
-  DateTime getStartTime(int index){
+  DateTime getStartTime(int index) {
     return appointments![index].from;
   }
 
   @override
-  DateTime getEndTime(int index){
+  DateTime getEndTime(int index) {
     return appointments![index].to;
   }
 
   @override
-  String getSubject(int index){
+  String getSubject(int index) {
     return appointments![index].eventName;
   }
 
   @override
-  Color getColor(int index){
+  Color getColor(int index) {
     return appointments![index].background;
   }
 
   @override
-  bool isAllDay(int index){
+  bool isAllDay(int index) {
     return appointments![index].isAllDay;
   }
 }
-
