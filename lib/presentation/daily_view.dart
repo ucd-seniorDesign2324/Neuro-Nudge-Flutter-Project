@@ -27,12 +27,12 @@ class _DailyViewState extends State<DailyView> {
           _endTimeText = '', _dateText = '', 
           _timeDetails = '';
   
-  List<Color> _colorCollection = <Color>[];
-  List<String> _colorNames = <String>[];
-  int _selectedColorIndex = 0;
+  // List<Color> _colorCollection = <Color>[];
+  // List<String> _colorNames = <String>[];
+  // int _selectedColorIndex = 0;
   // int _selectedTimeZoneIndex = 0;
   // List<String> _timeZoneCollection = <String>[];
-  late AppointmentDataSource _events;
+  // late AppointmentDataSource _events;
   Appointment? _selectedAppointment;
   late DateTime _startDate;
   late TimeOfDay _startTime;
@@ -64,8 +64,9 @@ class _DailyViewState extends State<DailyView> {
         ),
 
         showNavigationArrow: true,
-        dataSource: AppointmentDataSource(_getDataSource()),
-        onTap: calendarTapped,
+
+        dataSource:  AppointmentDataSource(_getDataSource()),
+        onTap:       calendarTapped,
         onLongPress: onCalendarLongPressed,
         
 
@@ -175,7 +176,7 @@ class _DailyViewState extends State<DailyView> {
     setState(() {
       _selectedAppointment = null;
       _isAllDay = false;
-      _selectedColorIndex = 0;
+      // _selectedColorIndex = 0;
       // _selectedTimeZoneIndex = 0;
       _subject = '';
       _notes = '';
@@ -188,8 +189,8 @@ class _DailyViewState extends State<DailyView> {
           _endDate = meetingDetails.endTime;
           _isAllDay = meetingDetails.isAllDay;
 
-          _selectedColorIndex =
-              _colorCollection.indexOf(meetingDetails.color);
+          // _selectedColorIndex =
+          //     _colorCollection.indexOf(meetingDetails.color);
 
           // _selectedTimeZoneIndex = meetingDetails.startTimeZone == ''
           //     ? 0
@@ -239,12 +240,27 @@ List<Appointment> _getDataSource(){
   DateTime startTime = DateTime(today.year, today.month, today.day, 9, 0, 0);
   DateTime endTime = startTime.add(const Duration(hours: 2));
 
-  meetings.add(Appointment(subject: 'Conference', startTime:startTime, endTime:endTime,color: const Color(0xFF0F8644)));
+  meetings.add(Appointment(
+    subject: 'Conference', 
+    startTime:startTime, 
+    endTime:endTime,
+    color: const Color(0xFF0F8644),
+    notes: '',
+    isAllDay: false
+    ));
 
   today = DateTime.now();
   startTime = DateTime(today.year, today.month, today.day, 13, 0, 0);
   endTime = startTime.add(const Duration(hours: 2));
-  meetings.add(Appointment(subject: 'Table', startTime:startTime, endTime:endTime,color: const Color.fromARGB(255, 134, 43, 15)));
+  
+  meetings.add(Appointment(
+    subject: 'Table', 
+    startTime:startTime, 
+    endTime:endTime,
+    color: const Color.fromARGB(255, 134, 43, 15),
+    notes: '',
+    isAllDay: false
+    ));
 
 
   return meetings;
@@ -257,27 +273,32 @@ class AppointmentDataSource extends CalendarDataSource{
 
   @override
   DateTime getStartTime(int index){
-    return appointments![index].from;
+    return appointments![index].startTime;
   }
 
   @override
   DateTime getEndTime(int index){
-    return appointments![index].to;
+    return appointments![index].endTime;
   }
 
   @override
   String getSubject(int index){
-    return appointments![index].eventName;
+    return appointments![index].subject;
   }
 
   @override
   Color getColor(int index){
-    return appointments![index].background;
+    return appointments![index].color;
   }
 
   @override
   bool isAllDay(int index){
     return appointments![index].isAllDay;
+  }
+
+  @override
+  String getNotes(int index){
+    return appointments![index].notes;
   }
 }
 

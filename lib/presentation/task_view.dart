@@ -18,8 +18,8 @@ class _TaskViewState extends State<TaskView> {
   List<Color> _colorCollection = <Color>[];
   List<String> _colorNames = <String>[];
   int _selectedColorIndex = 0;
-  int _selectedTimeZoneIndex = 0;
-  List<String> _timeZoneCollection = <String>[];
+  int _selectedTypeIndex = 0;
+  List<String> _typeCollection = <String>[];
   late AppointmentDataSource _events;
   Appointment? _selectedAppointment;
   late DateTime _startDate;
@@ -71,9 +71,9 @@ class _TaskViewState extends State<TaskView> {
                         // startTimeZone: _selectedTimeZoneIndex == 0
                         //     ? ''
                         //     : _timeZoneCollection[_selectedTimeZoneIndex],
-                        endTimeZone: _selectedTimeZoneIndex == 0
+                        endTimeZone: _selectedTypeIndex == 0
                             ? ''
-                            : _timeZoneCollection[_selectedTimeZoneIndex],
+                            : _typeCollection[_selectedTypeIndex],
                         notes: _notes,
                         isAllDay: _isAllDay,
                         subject: _subject == '' ? '(No title)' : _subject,
@@ -358,17 +358,13 @@ class _TaskViewState extends State<TaskView> {
             )
           ),
 
-
-          // ##################################################################
-          //        Nice to have if time allows but not needed for demo
-          // ##################################################################
           ListTile(
             contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
             leading: const Icon(
               Icons.public,
               color: Colors.black87,
             ),
-            title: Text(_timeZoneCollection[_selectedTimeZoneIndex]),
+            title: Text(_typeCollection[_selectedTypeIndex]),
             onTap: () {
               showDialog<Widget>(
                 context: context,
@@ -380,6 +376,11 @@ class _TaskViewState extends State<TaskView> {
             },
           ),
           
+
+          // ##################################################################
+          //        Nice to have if time allows but not needed for demo
+          // ##################################################################
+
           // const Divider(
           //   height: 1.0,
           //   thickness: 1,
