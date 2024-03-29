@@ -108,7 +108,8 @@ Future<List<Appointment>> _getDataSource() async {
       }
       print(startTime);
       print(endTime);
-      String subject = event['subject'].toString();
+      // print(event['subject']);
+      String subject = event['summary'];
       // String notes = event['description'];
       Color color = Colors.blue;
 
