@@ -1,6 +1,5 @@
 {
- "java.configuration.updateBuildConfiguration": "interactive",
- "java.project.sourcePaths": [
-  "android"
- ]
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.project.sourcePaths": ["android"],
+  "cmake.configureOnOpen": false
 }

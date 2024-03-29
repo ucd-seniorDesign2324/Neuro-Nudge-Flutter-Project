@@ -11,7 +11,6 @@ import 'package:nn/methods/load_ics_file.dart';
 // Define page navigations
 
 class HomePage extends StatefulWidget {
-
   const HomePage({super.key});
 
   @override
@@ -73,7 +72,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
 // ######################################################################################
 //
 //  The following code creates an event for the calendar view. Used for testing
@@ -84,22 +82,36 @@ Future<List<Appointment>> _getDataSource() async {
   print("Accessing load process.");
   Map<String, dynamic> calendarData = await loadIcsFile();
   List<dynamic> eventData = calendarData['data'];
-  List<Appointment> appointments = [];
+  List<Appointment> appointments = <Appointment>[];
 
-  for (var event in eventData) {
+  for (var event in eventData)
+  // for (var i = 0; i < 5; i++) 
+  {
+    // var event = eventData[i];
     print('checked');
     // Only create an Appointment if the event entry is a VEVENT
     // Check if the event has a 'type' key and if its value is 'VEVENT'
-    if (event.containsKey('type') && event['type'] == 'VEVENT') {
+    if (event.containsKey('type') && event['type'] == "VEVENT") {
       print('check passed');
-      print(event);
+      // String startStr = event['dtstart']['dt'];
+      // String endStr = event['dtend']['dt'];
+      // print(event);
+      // print(startStr);
+      // print(endStr);
       DateTime startTime = DateTime.parse(event['dtstart']['dt']);
-      DateTime endTime = DateTime.parse(event['dtend']['dt']);
-      String subject = 'class';
+      DateTime endTime;
+      if (event.containsKey('dtend')) {
+        endTime = DateTime.parse(event['dtend']['dt']);
+      }
+      else {
+        endTime = startTime.add(const Duration(hours: 1));
+      }
+      print(startTime);
+      print(endTime);
+      String subject = event['subject'].toString();
       // String notes = event['description'];
       Color color = Colors.blue;
 
-      
       appointments.add(Appointment(
         startTime: startTime,
         endTime: endTime,

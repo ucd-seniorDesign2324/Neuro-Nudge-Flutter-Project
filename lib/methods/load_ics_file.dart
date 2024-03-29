@@ -9,7 +9,7 @@ Future<Map<String, dynamic>> loadIcsFile() async {
   // print("Load function called");
   String fileContents = await rootBundle.loadString('assets/data.ics');
   final icsObj = ICalendar.fromString(fileContents);
-  //print(jsonEncode(icsObj.toJson()));
+  // print(jsonEncode(icsObj.toJson()));
   // final directory = await getApplicationDocumentsDirectory();
   // final path = '${directory.path}/data.json';
   // File file = File(path);
