@@ -1,34 +1,52 @@
+import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import 'package:nn/methods/evt_type_dropdown.dart';
+import 'package:nn/methods/data_source.dart';
+// import 'package:nn/methods/evt_type_dropdown.dart';
 
 class TaskView extends StatefulWidget{
-  final Appointment appointment;
+  final Appointment? appointment;
   
   const TaskView({super.key, required this.appointment});
 
   @override
-  State<TaskView> createState() => _TaskViewState();
+  State<TaskView> createState() => _TaskViewState(appointment: appointment);
 }
+
+List<Color> _colorCollection = <Color>[];
+List<String> _colorNames = <String>[];
+int _selectedColorIndex = 0;
+int _selectedTypeIndex = 0;
+List<String> _typeCollection = <String>[];
 
 class _TaskViewState extends State<TaskView> {
 
-  List<Color> _colorCollection = <Color>[];
-  List<String> _colorNames = <String>[];
-  int _selectedColorIndex = 0;
-  int _selectedTypeIndex = 0;
-  List<String> _typeCollection = <String>[];
-  late AppointmentDataSource _events;
-  Appointment? _selectedAppointment;
-  late DateTime _startDate;
-  late TimeOfDay _startTime;
-  late DateTime _endDate;
-  late TimeOfDay _endTime;
-  bool _isAllDay = false;
-  String _subject = '';
-  String _notes = '';
+  Appointment? appointment;
+  _TaskViewState({required this.appointment});
+
+  late DateTime _startDate, _endDate;
+  late TimeOfDay _startTime, _endTime;
+  late bool _isAllDay;
+  late String _subject, _notes;
+  late DataSource _events;
+  late Color _color;
+
+  @override
+  void initState(){
+    _startDate = appointment!.startTime;
+    _startTime = TimeOfDay.fromDateTime(appointment!.startTime);
+    _endDate =   appointment!.endTime;
+    _endTime =   TimeOfDay.fromDateTime(appointment!.endTime);
+    _isAllDay =  appointment!.isAllDay;
+    _subject =   appointment!.subject;
+    _notes =     appointment!.notes.toString();
+    _events =    DataSource(getDataSource());
+    _color =     appointment!.color;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +59,7 @@ class _TaskViewState extends State<TaskView> {
               leading: IconButton(
                 icon: const Icon(
                   Icons.close,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -52,39 +70,48 @@ class _TaskViewState extends State<TaskView> {
                     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                     icon: const Icon(
                       Icons.done,
-                      color: Colors.white,
+                      color: Colors.green,
                     ),
                     onPressed: () {
+
+                      // This code is adds the newly created event to the list of appointments
                       final List<Appointment> meetings = <Appointment>[];
                       
-                      if (widget.appointment != null) {
-                        _events.appointments!.removeAt(_events.appointments!
-                            .indexOf(widget.appointment));
-                        _events.notifyListeners(CalendarDataSourceAction.remove,
-                            <Appointment>[]..add(widget.appointment));
+                      if (appointment != null) { // If the selected appointment is not null
+                        
+                        // Remove appointment at index of selected appointment from data source
+                        _events.appointments!.removeAt(_events.appointments!.indexOf(appointment)); 
+
+                        // Notifiy the listener of the _events data source that the data being passed is to be removed from the data source
+                        _events.notifyListeners(CalendarDataSourceAction.remove, <Appointment>[]..add(appointment!));
+                        print(appointment);
                       }
 
+                      // Add an appointments object to the list of Appointments
                       meetings.add(Appointment(
                         startTime: _startDate,
                         endTime:   _endDate,
-                        color:    _colorCollection[_selectedColorIndex],
+                        color:     _color,
                         // startTimeZone: _selectedTimeZoneIndex == 0
                         //     ? ''
                         //     : _timeZoneCollection[_selectedTimeZoneIndex],
-                        endTimeZone: _selectedTypeIndex == 0
-                            ? ''
-                            : _typeCollection[_selectedTypeIndex],
-                        notes: _notes,
-                        isAllDay: _isAllDay,
-                        subject: _subject == '' ? '(No title)' : _subject,
+                        // endTimeZone: _selectedTypeIndex == 0
+                        //     ? ''
+                        //     : _typeCollection[_selectedTypeIndex],
+                        notes:     _notes,
+                        isAllDay:  _isAllDay,
+                        subject:   _subject == '' ? '(No title)' : _subject,
                       ));
 
+                      // Add the appointment object at index 0 to the data source
                       _events.appointments!.add(meetings[0]);
 
+                      // Notify the listener of the data source that the data being passed is to be added to the data source.
                       _events.notifyListeners(
                           CalendarDataSourceAction.add, meetings);
 
-                      // widget.appointment = null;
+                      // Set already null appointment to null?
+                      appointment = null;
 
                       Navigator.pop(context);
                     })
@@ -96,17 +123,17 @@ class _TaskViewState extends State<TaskView> {
                 children: <Widget>[_getAppointmentEditor(context)],
               ),
             ),
-            floatingActionButton: _selectedAppointment == null
+            floatingActionButton: appointment == null
                 ? const Text('')
                 : FloatingActionButton(
                     onPressed: () {
-                      if (_selectedAppointment != null) {
-                        _events.appointments!.removeAt(_events.appointments!.indexOf(_selectedAppointment));
+                      if (appointment != null) {
+                        _events.appointments!.removeAt(_events.appointments!.indexOf(appointment));
                         
                         _events.notifyListeners(CalendarDataSourceAction.remove,
-                            <Appointment>[]..add(_selectedAppointment!));
+                            <Appointment>[]..add(appointment!));
                         
-                        _selectedAppointment = null;
+                        appointment = null;
                         
                         Navigator.pop(context);
                       }
@@ -131,7 +158,7 @@ class _TaskViewState extends State<TaskView> {
             contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
             leading: const Text(''),
             title: TextField(
-              controller: TextEditingController(text: _subject),
+              controller: TextEditingController(text: appointment!.subject),
               onChanged: (String value) {
                 _subject = value;
               },
@@ -154,31 +181,31 @@ class _TaskViewState extends State<TaskView> {
             thickness: 1,
           ),
 
-          ListTile(
-            contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
-            leading: const Icon(
-              Icons.access_time,
-              color: Colors.black54,
-            ),
-            title: Row(children: <Widget>[
-              const Expanded(
-                child: Text('All-day'),
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Switch(
-                    value: _isAllDay,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _isAllDay = value;
-                      });
-                    },
-                  )
-                )
-              )
-            ])
-          ),
+          // ListTile(
+          //   contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+          //   leading: const Icon(
+          //     Icons.access_time,
+          //     color: Colors.black54,
+          //   ),
+          //   title: Row(children: <Widget>[
+          //     const Expanded(
+          //       child: Text('All-day'),
+          //     ),
+          //     Expanded(
+          //       child: Align(
+          //         alignment: Alignment.centerRight,
+          //         child: Switch(
+          //           value: _isAllDay,
+          //           onChanged: (bool value) {
+          //             setState(() {
+          //               _isAllDay = value;
+          //             });
+          //           },
+          //         )
+          //       )
+          //     )
+          //   ])
+          // ),
 
           ListTile(
             contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
@@ -358,23 +385,23 @@ class _TaskViewState extends State<TaskView> {
             )
           ),
 
-          ListTile(
-            contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
-            leading: const Icon(
-              Icons.public,
-              color: Colors.black87,
-            ),
-            title: Text(_typeCollection[_selectedTypeIndex]),
-            onTap: () {
-              showDialog<Widget>(
-                context: context,
-                barrierDismissible: true,
-                builder: (BuildContext context) {
-                  return EventTypeDropdown();
-                },
-              ).then((dynamic value) => setState(() {}));
-            },
-          ),
+          // ListTile(
+          //   contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+          //   leading: const Icon(
+          //     Icons.public,
+          //     color: Colors.black87,
+          //   ),
+          //   title: Text(_typeCollection[_selectedTypeIndex]),
+          //   onTap: () {
+          //     showDialog<Widget>(
+          //       context: context,
+          //       barrierDismissible: true,
+          //       builder: (BuildContext context) {
+          //         return EventTypeDropdown();
+          //       },
+          //     ).then((dynamic value) => setState(() {}));
+          //   },
+          // ),
           
 
           // ##################################################################
@@ -446,62 +473,3 @@ class _TaskViewState extends State<TaskView> {
       ));
 }
 }
-
-
-
-
-// ######################################################################################
-// 
-//  The following code creates an event for the calendar view. Used for testing
-//
-// ######################################################################################
-
-List<Appointment> _getDataSource(){
-  final List<Appointment> meetings = <Appointment>[];
-  
-  DateTime today = DateTime.now();
-  DateTime startTime = DateTime(today.year, today.month, today.day, 9, 0, 0);
-  DateTime endTime = startTime.add(const Duration(hours: 2));
-
-  meetings.add(Appointment(subject: 'Conference', startTime:startTime, endTime:endTime,color: const Color(0xFF0F8644)));
-
-  today = DateTime.now();
-  startTime = DateTime(today.year, today.month, today.day, 13, 0, 0);
-  endTime = startTime.add(const Duration(hours: 2));
-  meetings.add(Appointment(subject: 'Table', startTime:startTime, endTime:endTime,color: const Color.fromARGB(255, 134, 43, 15)));
-
-
-  return meetings;
-}
-
-class AppointmentDataSource extends CalendarDataSource{
-  AppointmentDataSource(List<Appointment> source){
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index){
-    return appointments![index].from;
-  }
-
-  @override
-  DateTime getEndTime(int index){
-    return appointments![index].to;
-  }
-
-  @override
-  String getSubject(int index){
-    return appointments![index].eventName;
-  }
-
-  @override
-  Color getColor(int index){
-    return appointments![index].background;
-  }
-
-  @override
-  bool isAllDay(int index){
-    return appointments![index].isAllDay;
-  }
-}
-

@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import 'package:nn/methods/data_source.dart';
 import 'package:nn/presentation/new_task_view.dart';
 import 'package:nn/presentation/task_view.dart';
 import 'package:nn/methods/drawer_menu.dart';
@@ -16,31 +18,45 @@ class DailyView extends StatefulWidget {
   State<DailyView> createState() => _DailyViewState();
 }
 
+String? _subjectText = '', _startTimeText = '',
+        _endTimeText = '', _dateText = '', 
+        _timeDetails = '';
+
+// List<Color> _colorCollection = <Color>[];
+// List<String> _colorNames = <String>[];
+// int _selectedColorIndex = 0;
+// int _selectedTimeZoneIndex = 0;
+// List<String> _timeZoneCollection = <String>[];
+late DataSource _events;
+Appointment? _selectedAppointment;
+late DateTime _startDate;
+late TimeOfDay _startTime;
+late DateTime _endDate;
+late TimeOfDay _endTime;
+bool _isAllDay = false;
+String _subject = '';
+String _notes = '';
+
+String appTitle = 'Neuro Nudge';
+
 // State class for monthly view
 class _DailyViewState extends State<DailyView> {
 
+  late List<Appointment> appointments;
   CalendarController calendarController = CalendarController();
 
-  static String appTitle = 'Neuro Nudge';
-
-  String? _subjectText = '', _startTimeText = '',
-          _endTimeText = '', _dateText = '', 
-          _timeDetails = '';
   
-  // List<Color> _colorCollection = <Color>[];
-  // List<String> _colorNames = <String>[];
-  // int _selectedColorIndex = 0;
-  // int _selectedTimeZoneIndex = 0;
-  // List<String> _timeZoneCollection = <String>[];
-  // late AppointmentDataSource _events;
-  Appointment? _selectedAppointment;
-  late DateTime _startDate;
-  late TimeOfDay _startTime;
-  late DateTime _endDate;
-  late TimeOfDay _endTime;
-  bool _isAllDay = false;
-  String _subject = '';
-  String _notes = '';
+  @override
+  void initState() {
+    appointments = getDataSource();
+    _events = DataSource(appointments);
+    _selectedAppointment = null;
+    // _selectedColorIndex = 0;
+    // _selectedTimeZoneIndex = 0;
+    _subject = '';
+    _notes = '';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context){
@@ -51,24 +67,29 @@ class _DailyViewState extends State<DailyView> {
       drawer: drawerMenuBuilder(context),
 
       body: SfCalendar(
-        view: CalendarView.timelineDay,
-
+        view: CalendarView.week,
+        controller: calendarController,
         headerStyle: const CalendarHeaderStyle(
           textAlign: TextAlign.center,
         ),
 
         timeSlotViewSettings: const TimeSlotViewSettings( 
-          startHour: 8,
-          endHour: 21,
-          numberOfDaysInView: 1
+          numberOfDaysInView: 5
         ),
 
         showNavigationArrow: true,
 
-        dataSource:  AppointmentDataSource(_getDataSource()),
+        dataSource:  _events,
         onTap:       calendarTapped,
         onLongPress: onCalendarLongPressed,
-        
+        // appointmentBuilder: (context, calendarAppointmentDetails) {
+        //   final Appointment meeting =
+        //       calendarAppointmentDetails.appointments.first;
+        //   return Container(
+        //     color: meeting.color.withOpacity(0.8),
+        //     child: Text(meeting.subject),
+        //   );
+        // },
 
       ),
 
@@ -87,6 +108,10 @@ class _DailyViewState extends State<DailyView> {
             color: Colors.white,
             size: 45,)
         ),
+      // resizeToAvoidBottomInset: false,
+      //   body: Padding(
+      //       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+      //       child: getEventCalendar(_events, onCalendarLongPressed))
 
     );
   }
@@ -170,9 +195,12 @@ class _DailyViewState extends State<DailyView> {
   void onCalendarLongPressed(CalendarLongPressDetails details) {
     if (details.targetElement != CalendarElement.calendarCell &&
         details.targetElement != CalendarElement.appointment) {
-      return;
+          print('Returned');
+          return;
     }
+    print(calendarController.view);
 
+    // print("Didn't return");
     setState(() {
       _selectedAppointment = null;
       _isAllDay = false;
@@ -180,10 +208,12 @@ class _DailyViewState extends State<DailyView> {
       // _selectedTimeZoneIndex = 0;
       _subject = '';
       _notes = '';
-      if (calendarController.view == CalendarView.month) {
+      if (calendarController.view == CalendarView.week) {
+        print('Entered first condition');
         calendarController.view = CalendarView.day;
       } else {
         if (details.appointments != null && details.appointments!.length == 1){
+          print('Entered second condition');
           final Appointment meetingDetails = details.appointments![0];
           _startDate = meetingDetails.startTime;
           _endDate = meetingDetails.endTime;
@@ -203,6 +233,7 @@ class _DailyViewState extends State<DailyView> {
           _notes = meetingDetails.notes.toString();
           _selectedAppointment = meetingDetails;
         } else {
+          print('Failed second conditioin');
           final DateTime date = details.date!;
           _startDate = date;
           _endDate = date.add(const Duration(hours: 1));
@@ -210,95 +241,23 @@ class _DailyViewState extends State<DailyView> {
 
         _startTime = TimeOfDay(hour: _startDate.hour, minute: _startDate.minute);
         _endTime = TimeOfDay(hour: _endDate.hour, minute: _endDate.minute);
+        
+        print('Hey there');
+        print(_selectedAppointment);
 
         Navigator.push<Widget>(
           context,
           MaterialPageRoute(
-              builder: (BuildContext context) => TaskView(appointment: 
-              _selectedAppointment ?? 
+              builder: (BuildContext context) => TaskView(appointment: _selectedAppointment ?? 
               Appointment(
                 subject: 'Conference', 
                 startTime: DateTime.now(), 
-                endTime:DateTime.now().add(const Duration(hours: 2)),
-                color: const Color(0xFF0F8644)))),
+                endTime: DateTime.now().add(const Duration(hours: 2)),
+                color: const Color(0xFF0F8644))
+                )
+                ),
         );
       }
     });
   }
 }
-
-
-// ######################################################################################
-// 
-//  The following code creates an event for the calendar view. Used for testing
-//
-// ######################################################################################
-
-List<Appointment> _getDataSource(){
-  final List<Appointment> meetings = <Appointment>[];
-  DateTime today = DateTime.now();
-  DateTime startTime = DateTime(today.year, today.month, today.day, 9, 0, 0);
-  DateTime endTime = startTime.add(const Duration(hours: 2));
-
-  meetings.add(Appointment(
-    subject: 'Conference', 
-    startTime:startTime, 
-    endTime:endTime,
-    color: const Color(0xFF0F8644),
-    notes: '',
-    isAllDay: false
-    ));
-
-  today = DateTime.now();
-  startTime = DateTime(today.year, today.month, today.day, 13, 0, 0);
-  endTime = startTime.add(const Duration(hours: 2));
-  
-  meetings.add(Appointment(
-    subject: 'Table', 
-    startTime:startTime, 
-    endTime:endTime,
-    color: const Color.fromARGB(255, 134, 43, 15),
-    notes: '',
-    isAllDay: false
-    ));
-
-
-  return meetings;
-}
-
-class AppointmentDataSource extends CalendarDataSource{
-  AppointmentDataSource(List<Appointment> source){
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index){
-    return appointments![index].startTime;
-  }
-
-  @override
-  DateTime getEndTime(int index){
-    return appointments![index].endTime;
-  }
-
-  @override
-  String getSubject(int index){
-    return appointments![index].subject;
-  }
-
-  @override
-  Color getColor(int index){
-    return appointments![index].color;
-  }
-
-  @override
-  bool isAllDay(int index){
-    return appointments![index].isAllDay;
-  }
-
-  @override
-  String getNotes(int index){
-    return appointments![index].notes;
-  }
-}
-
