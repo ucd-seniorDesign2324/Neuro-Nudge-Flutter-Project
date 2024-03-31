@@ -57,8 +57,8 @@ class _DropDownMenuState extends State<DropDownMenu> {
 
   String startHourValue = hours.first;
   String startMeridiemValue = meridiem.first;
-  String endHourValue = hours.last;
-  String endMeridiemValue = meridiem.last;
+  String endHourValue = hours.first;
+  String endMeridiemValue = meridiem.first;
 
   // Load time restriction values if previously set. Otherwise load default values.
   Future<void> _loadPreferences() async {
