@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -22,13 +21,17 @@ String? _subjectText = '', _startTimeText = '',
         _endTimeText = '', _dateText = '', 
         _timeDetails = '';
 
+// Potentially userful later on.
+// ###################################################
 // List<Color> _colorCollection = <Color>[];
 // List<String> _colorNames = <String>[];
 // int _selectedColorIndex = 0;
 // int _selectedTimeZoneIndex = 0;
 // List<String> _timeZoneCollection = <String>[];
-late DataSource _events;
+// ###################################################
+
 Appointment? _selectedAppointment;
+late DataSource _events;
 late DateTime _startDate;
 late TimeOfDay _startTime;
 late DateTime _endDate;
@@ -44,7 +47,6 @@ class _DailyViewState extends State<DailyView> {
 
   late List<Appointment> appointments;
   CalendarController calendarController = CalendarController();
-
   
   @override
   void initState() {
@@ -82,15 +84,6 @@ class _DailyViewState extends State<DailyView> {
         dataSource:  _events,
         onTap:       calendarTapped,
         onLongPress: onCalendarLongPressed,
-        // appointmentBuilder: (context, calendarAppointmentDetails) {
-        //   final Appointment meeting =
-        //       calendarAppointmentDetails.appointments.first;
-        //   return Container(
-        //     color: meeting.color.withOpacity(0.8),
-        //     child: Text(meeting.subject),
-        //   );
-        // },
-
       ),
 
       floatingActionButton: FloatingActionButton( 
@@ -108,10 +101,6 @@ class _DailyViewState extends State<DailyView> {
             color: Colors.white,
             size: 45,)
         ),
-      // resizeToAvoidBottomInset: false,
-      //   body: Padding(
-      //       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-      //       child: getEventCalendar(_events, onCalendarLongPressed))
 
     );
   }
@@ -195,12 +184,9 @@ class _DailyViewState extends State<DailyView> {
   void onCalendarLongPressed(CalendarLongPressDetails details) {
     if (details.targetElement != CalendarElement.calendarCell &&
         details.targetElement != CalendarElement.appointment) {
-          print('Returned');
           return;
     }
-    print(calendarController.view);
 
-    // print("Didn't return");
     setState(() {
       _selectedAppointment = null;
       _isAllDay = false;
@@ -209,11 +195,11 @@ class _DailyViewState extends State<DailyView> {
       _subject = '';
       _notes = '';
       if (calendarController.view == CalendarView.week) {
-        print('Entered first condition');
+
         calendarController.view = CalendarView.day;
       } else {
         if (details.appointments != null && details.appointments!.length == 1){
-          print('Entered second condition');
+
           final Appointment meetingDetails = details.appointments![0];
           _startDate = meetingDetails.startTime;
           _endDate = meetingDetails.endTime;
@@ -233,7 +219,6 @@ class _DailyViewState extends State<DailyView> {
           _notes = meetingDetails.notes.toString();
           _selectedAppointment = meetingDetails;
         } else {
-          print('Failed second conditioin');
           final DateTime date = details.date!;
           _startDate = date;
           _endDate = date.add(const Duration(hours: 1));
@@ -241,9 +226,6 @@ class _DailyViewState extends State<DailyView> {
 
         _startTime = TimeOfDay(hour: _startDate.hour, minute: _startDate.minute);
         _endTime = TimeOfDay(hour: _endDate.hour, minute: _endDate.minute);
-        
-        print('Hey there');
-        print(_selectedAppointment);
 
         Navigator.push<Widget>(
           context,

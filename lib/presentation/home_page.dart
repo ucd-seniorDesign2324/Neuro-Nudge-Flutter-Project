@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
@@ -8,6 +7,7 @@ import 'package:nn/methods/data_source.dart';
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 import 'package:nn/presentation/new_task_view.dart';
+import 'package:nn/presentation/task_view.dart';
 
 // TODO: 
 // Fetch event data and display on list tiles.
@@ -21,14 +21,38 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+Appointment? _selectedAppointment;
+late DataSource _events;
+late DateTime _startDate;
+late TimeOfDay _startTime;
+late DateTime _endDate;
+late TimeOfDay _endTime;
+bool _isAllDay = false;
+String _subject = '';
+String _notes = '';
+
 class _HomePageState extends State<HomePage> {
 
   final FloatingSearchBarController controller = FloatingSearchBarController();
+
+  late List<Appointment> appointments;
+  CalendarController calendarController = CalendarController();
 
   String? _subjectText = '', _startTimeText = '',
           _endTimeText = '', _dateText = '', 
           _timeDetails = '';
 
+    @override
+  void initState() {
+    appointments = getDataSource();
+    _events = DataSource(appointments);
+    _selectedAppointment = null;
+    // _selectedColorIndex = 0;
+    // _selectedTimeZoneIndex = 0;
+    _subject = '';
+    _notes = '';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context){
@@ -155,5 +179,67 @@ class _HomePageState extends State<HomePage> {
         );
       }
     );
+  }
+
+  void onCalendarLongPressed(CalendarLongPressDetails details) {
+    if (details.targetElement != CalendarElement.calendarCell &&
+        details.targetElement != CalendarElement.appointment) {
+          return;
+    }
+
+    setState(() {
+      _selectedAppointment = null;
+      _isAllDay = false;
+      // _selectedColorIndex = 0;
+      // _selectedTimeZoneIndex = 0;
+      _subject = '';
+      _notes = '';
+      if (calendarController.view == CalendarView.week) {
+
+        calendarController.view = CalendarView.day;
+      } else {
+        if (details.appointments != null && details.appointments!.length == 1){
+
+          final Appointment meetingDetails = details.appointments![0];
+          _startDate = meetingDetails.startTime;
+          _endDate = meetingDetails.endTime;
+          _isAllDay = meetingDetails.isAllDay;
+
+          // _selectedColorIndex =
+          //     _colorCollection.indexOf(meetingDetails.color);
+
+          // _selectedTimeZoneIndex = meetingDetails.startTimeZone == ''
+          //     ? 0
+          //     : _timeZoneCollection.indexOf(meetingDetails.startTimeZone.toString());
+
+          _subject = meetingDetails.subject == '(No title)'
+              ? ''
+              : meetingDetails.subject;
+
+          _notes = meetingDetails.notes.toString();
+          _selectedAppointment = meetingDetails;
+        } else {
+          final DateTime date = details.date!;
+          _startDate = date;
+          _endDate = date.add(const Duration(hours: 1));
+        }
+
+        _startTime = TimeOfDay(hour: _startDate.hour, minute: _startDate.minute);
+        _endTime = TimeOfDay(hour: _endDate.hour, minute: _endDate.minute);
+
+        Navigator.push<Widget>(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => TaskView(appointment: _selectedAppointment ?? 
+              Appointment(
+                subject: 'Conference', 
+                startTime: DateTime.now(), 
+                endTime: DateTime.now().add(const Duration(hours: 2)),
+                color: const Color(0xFF0F8644))
+                )
+                ),
+        );
+      }
+    });
   }
 }

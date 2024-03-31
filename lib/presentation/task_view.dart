@@ -15,23 +15,23 @@ class TaskView extends StatefulWidget{
   State<TaskView> createState() => _TaskViewState(appointment: appointment);
 }
 
-List<Color> _colorCollection = <Color>[];
-List<String> _colorNames = <String>[];
-int _selectedColorIndex = 0;
-int _selectedTypeIndex = 0;
-List<String> _typeCollection = <String>[];
+// List<Color> _colorCollection = <Color>[];
+// List<String> _colorNames = <String>[];
+// int _selectedColorIndex = 0;
+// int _selectedTypeIndex = 0;
+// List<String> _typeCollection = <String>[];
 
 class _TaskViewState extends State<TaskView> {
 
   Appointment? appointment;
   _TaskViewState({required this.appointment});
 
-  late DateTime _startDate, _endDate;
-  late TimeOfDay _startTime, _endTime;
-  late bool _isAllDay;
-  late String _subject, _notes;
+  late DateTime   _startDate, _endDate;
+  late TimeOfDay  _startTime, _endTime;
+  late bool       _isAllDay;
+  late String     _subject, _notes;
   late DataSource _events;
-  late Color _color;
+  late Color      _color;
 
   @override
   void initState(){
@@ -44,7 +44,7 @@ class _TaskViewState extends State<TaskView> {
     _notes =     appointment!.notes.toString();
     _events =    DataSource(getDataSource());
     _color =     appointment!.color;
-
+    print(_events);
     super.initState();
   }
 
@@ -72,45 +72,39 @@ class _TaskViewState extends State<TaskView> {
                       Icons.done,
                       color: Colors.green,
                     ),
-                    onPressed: () {
-
-                      // This code is adds the newly created event to the list of appointments
+                    onPressed: () { // Add the edited event to the list of appointments
                       final List<Appointment> meetings = <Appointment>[];
-                      
-                      if (appointment != null) { // If the selected appointment is not null
-                        
-                        // Remove appointment at index of selected appointment from data source
-                        _events.appointments!.removeAt(_events.appointments!.indexOf(appointment)); 
 
-                        // Notifiy the listener of the _events data source that the data being passed is to be removed from the data source
-                        _events.notifyListeners(CalendarDataSourceAction.remove, <Appointment>[]..add(appointment!));
-                        print(appointment);
+                      // If appointment object exists, remove from data source
+                      if (appointment != null) {
+                        _events.appointments!.removeAt(_events.appointments!.indexOf(appointment)); 
+                        _events.notifyListeners(CalendarDataSourceAction.remove, 
+                          <Appointment>[]..add(appointment!));
                       }
 
-                      // Add an appointments object to the list of Appointments
+                      // Create new appointment object
                       meetings.add(Appointment(
                         startTime: _startDate,
                         endTime:   _endDate,
                         color:     _color,
+                        notes:     _notes,
+                        isAllDay:  _isAllDay,
+                        subject:   _subject == '' ? '(No title)' : _subject,
                         // startTimeZone: _selectedTimeZoneIndex == 0
                         //     ? ''
                         //     : _timeZoneCollection[_selectedTimeZoneIndex],
                         // endTimeZone: _selectedTypeIndex == 0
                         //     ? ''
                         //     : _typeCollection[_selectedTypeIndex],
-                        notes:     _notes,
-                        isAllDay:  _isAllDay,
-                        subject:   _subject == '' ? '(No title)' : _subject,
                       ));
 
-                      // Add the appointment object at index 0 to the data source
+                      // Add the appointment object to the data source object
                       _events.appointments!.add(meetings[0]);
 
-                      // Notify the listener of the data source that the data being passed is to be added to the data source.
+                      // Add appointment object to actual data source.
                       _events.notifyListeners(
                           CalendarDataSourceAction.add, meetings);
 
-                      // Set already null appointment to null?
                       appointment = null;
 
                       Navigator.pop(context);
@@ -126,7 +120,7 @@ class _TaskViewState extends State<TaskView> {
             floatingActionButton: appointment == null
                 ? const Text('')
                 : FloatingActionButton(
-                    onPressed: () {
+                    onPressed: () { // Delete appointment
                       if (appointment != null) {
                         _events.appointments!.removeAt(_events.appointments!.indexOf(appointment));
                         
