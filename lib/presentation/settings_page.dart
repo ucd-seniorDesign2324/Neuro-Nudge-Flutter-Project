@@ -55,10 +55,10 @@ class DropDownMenu extends StatefulWidget{
 class _DropDownMenuState extends State<DropDownMenu> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  String startHourValue = "";
-  String startMeridiemValue = "";
-  String endHourValue = "";
-  String endMeridiemValue = "";
+  String startHourValue = hours.first;
+  String startMeridiemValue = meridiem.first;
+  String endHourValue = hours.last;
+  String endMeridiemValue = meridiem.last;
 
   // Load time restriction values if previously set. Otherwise load default values.
   Future<void> _loadPreferences() async {
