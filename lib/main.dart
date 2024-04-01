@@ -3,6 +3,7 @@ import 'package:nn/presentation/home_page.dart';
 import 'package:nn/presentation/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'data/firebase_options.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
 
@@ -12,7 +13,7 @@ void main() async {
     DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 } 
 
 class MyApp extends StatelessWidget {
