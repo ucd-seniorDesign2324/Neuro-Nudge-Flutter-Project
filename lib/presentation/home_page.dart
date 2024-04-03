@@ -7,6 +7,7 @@ import 'package:nn/presentation/new_task_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // TODO:
 // Fetch event data and display on list tiles.
@@ -21,14 +22,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FloatingSearchBarController controller = FloatingSearchBarController();
+  // var view = CalendarView.schedule;
 
   @override
   Widget build(BuildContext context) {
     const String appTitle = 'NeuroNudge';
     return Scaffold(
       appBar: appBarBuilder(context, appTitle),
-      drawer: drawerMenuBuilder(context),
-      body: const LoadWidget(),
+      drawer: const DrawerMenu(),
+      body: CalWidget(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -48,19 +50,35 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class LoadWidget extends ConsumerWidget {
-  const LoadWidget({
+class CalWidget extends ConsumerStatefulWidget {
+  const CalWidget({
     super.key,
   });
+  @override
+  ConsumerState<CalWidget> createState() => _CalWidgetState();
 
+}
+
+class _CalWidgetState extends ConsumerState<CalWidget>{
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // final view = ref.watch(viewProvider);
+    print("ITS HAPPENING");
     final calInfo = ref.watch(calProvider);
+    
+    final view = ref.read(viewProvider.notifier).get();
+    
+    // print(view);
 
     return calInfo.when(data: (item) => 
     SfCalendar(
-            view: CalendarView.schedule,
+            view: view, //TODO
             dataSource: AppointmentDataSource(calInfo.value!),
             headerStyle: const CalendarHeaderStyle(
               textAlign: TextAlign.center,
@@ -174,4 +192,10 @@ final calProvider = FutureProvider((ref) async {
 
   return cal.loadIcsFile();
 },);
+
+// final currentViewProvider = StateProvider<CalendarView>((ref) {
+//   return CalendarView.schedule;
+// });
+
+
 
