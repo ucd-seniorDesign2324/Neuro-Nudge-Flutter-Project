@@ -4,19 +4,14 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:http/http.dart' as http;
+// import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:nn/data/python_api.dart';
 import 'package:nn/controller/meeting.dart';
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 import 'package:nn/presentation/new_task_view.dart';
-
-
-
-// TODO:
-// Fetch event data and display on list tiles.
-// Define page navigations
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,8 +22,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FloatingSearchBarController controller = FloatingSearchBarController();
-  // var view = CalendarView.schedule;
-
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: appBarBuilder(context, appTitle),
       drawer: const DrawerMenu(),
-      body: CalWidget(),
+      body: const CalWidget(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -78,13 +71,14 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
 
   // Database API call
   void asyncFetch() async {
-    appointments = await fetchEvents();
+    appointments = await fetchEvents(http.Client());
   }
 
+  // TODO: Perhaps use FutureBuilder widget for calendar data?
   @override
   Widget build(BuildContext context) {
 
-    print("ITS HAPPENING");
+    // print("ITS HAPPENING");
     final calInfo = ref.watch(calProvider);
 
     // View changing
@@ -94,9 +88,9 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
     return calInfo.when(
       data: (item) =>
         SfCalendar(
-          view: view, //TODO
+          view: view,
           controller: calController,
-          dataSource: AppointmentDataSource(calInfo.value!),
+          dataSource: MeetingDataSource(appointments),
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,
           ),

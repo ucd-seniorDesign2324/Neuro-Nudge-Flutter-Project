@@ -17,20 +17,20 @@ class Meeting {
     this.description = "",
   });
 
-  factory Meeting.fromJson(dynamic json){
+  factory Meeting.fromJson(Map<String, dynamic> json){
     return switch (json){
       {
       'title': String title,
       'location': String location,
-      'startTime': DateTime startTime,
-      'endTime': DateTime endTime,
+      'startTime': String startTime,
+      'endTime': String endTime,
       'description': String description
       
       } => Meeting(
         title: title,
         location: location,
-        startTime: startTime,
-        endTime: endTime,
+        startTime: DateTime.parse(startTime),
+        endTime: DateTime.parse(endTime),
         description: description,
       ),
        _ => throw Exception('Failed to load meeting object')
@@ -79,8 +79,8 @@ class Meeting {
 }
 
 // Data Source
-class MeetingList extends CalendarDataSource{
-  MeetingList(List<Meeting> source) {
+class MeetingDataSource extends CalendarDataSource{
+  MeetingDataSource(List<Meeting> source) {
     appointments = source;
   }
 

@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import 'package:nn/presentation/daily_view.dart';
 import 'package:nn/presentation/settings_page.dart';
-// import 'package:nn/presentation/home_page.dart';
-// import 'package:nn/presentation/monthly_view.dart';
 import 'package:nn/presentation/import_calendar_page.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-// @riverpod
-// CalendarView view (Ref ref) {
-//   final cView = ref.watch(viewProvider);
-//   return cView;
-// }
 
 class CurrentView extends Notifier<CalendarView> {
   
