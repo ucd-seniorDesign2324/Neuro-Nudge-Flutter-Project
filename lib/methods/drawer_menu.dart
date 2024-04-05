@@ -3,13 +3,12 @@ import 'package:gap/gap.dart';
 
 import 'package:nn/presentation/daily_view.dart';
 import 'package:nn/presentation/settings_page.dart';
-import 'package:nn/presentation/home_page.dart';
-import 'package:nn/presentation/monthly_view.dart';
+// import 'package:nn/presentation/home_page.dart';
+// import 'package:nn/presentation/monthly_view.dart';
 import 'package:nn/presentation/import_calendar_page.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:nn/presentation/home_page.dart';
 
 // @riverpod
 // CalendarView view (Ref ref) {
@@ -18,6 +17,7 @@ import 'package:nn/presentation/home_page.dart';
 // }
 
 class CurrentView extends Notifier<CalendarView> {
+  
   @override
   CalendarView build(){
     return CalendarView.schedule;
@@ -25,7 +25,6 @@ class CurrentView extends Notifier<CalendarView> {
 
   void set(CalendarView newView) {
     state = newView;
-    print(state);
   }
 
   CalendarView get(){
@@ -35,12 +34,12 @@ class CurrentView extends Notifier<CalendarView> {
 
 final viewProvider = NotifierProvider<CurrentView, CalendarView>(CurrentView.new);
 
-
 class DrawerMenu extends ConsumerWidget {
   const DrawerMenu({super.key});
   
   @override
   Widget build(BuildContext context, WidgetRef ref){
+
     return Drawer( 
         child: Column( 
           children: [
@@ -70,8 +69,7 @@ class DrawerMenu extends ConsumerWidget {
               onTap: (){
                 // Navigator.pop(context, CalendarView.day);
                 
-                  ref.read(viewProvider.notifier).set(CalendarView.day);
-                
+                  ref.read(viewProvider.notifier).set(CalendarView.week);
                 
                 
                 // ref.read(viewProvider.notifier).set(CalendarView.day);

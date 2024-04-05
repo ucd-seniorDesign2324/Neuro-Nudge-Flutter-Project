@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:nn/methods/drawer_menu.dart';
-import 'package:nn/methods/app_bar.dart';
-import 'package:nn/presentation/new_task_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import 'package:nn/data/python_api.dart';
+import 'package:nn/controller/meeting.dart';
+import 'package:nn/methods/drawer_menu.dart';
+import 'package:nn/methods/app_bar.dart';
+import 'package:nn/presentation/new_task_view.dart';
+
+
 
 // TODO:
 // Fetch event data and display on list tiles.
@@ -23,6 +28,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FloatingSearchBarController controller = FloatingSearchBarController();
   // var view = CalendarView.schedule;
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,45 +66,61 @@ class CalWidget extends ConsumerStatefulWidget {
 }
 
 class _CalWidgetState extends ConsumerState<CalWidget>{
+  
+  late List<Meeting> appointments = [];
+  CalendarController calController = CalendarController();
 
   @override
   void initState() {
     super.initState();
+    asyncFetch();
+  }
+
+  // Database API call
+  void asyncFetch() async {
+    appointments = await fetchEvents();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final view = ref.watch(viewProvider);
+
     print("ITS HAPPENING");
     final calInfo = ref.watch(calProvider);
-    
-    final view = ref.read(viewProvider.notifier).get();
-    
-    // print(view);
 
-    return calInfo.when(data: (item) => 
-    SfCalendar(
-            view: view, //TODO
-            dataSource: AppointmentDataSource(calInfo.value!),
-            headerStyle: const CalendarHeaderStyle(
-              textAlign: TextAlign.center,
-            ),
-            scheduleViewSettings: const ScheduleViewSettings(
-              appointmentItemHeight: 100,
-              appointmentTextStyle: TextStyle(
-                fontSize: 20,
-              ),
+    // View changing
+    final view = ref.watch(viewProvider.select((value) => value));
+    calController.view = view;
+
+    return calInfo.when(
+      data: (item) =>
+        SfCalendar(
+          view: view, //TODO
+          controller: calController,
+          dataSource: AppointmentDataSource(calInfo.value!),
+          headerStyle: const CalendarHeaderStyle(
+            textAlign: TextAlign.center,
+          ),
+
+          monthViewSettings: const MonthViewSettings( 
+            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+          ),
+
+          timeSlotViewSettings: const TimeSlotViewSettings( 
+            numberOfDaysInView: 1
+          ),
+
+          scheduleViewSettings: const ScheduleViewSettings(
+            appointmentItemHeight: 100,
+            appointmentTextStyle: TextStyle(
+              fontSize: 20,
             ),
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, st) => Center(child: Text(e.toString())),
-          );
+        ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text(e.toString())),
+            );
   }
 }
-
-
-
-
 
 class AppointmentDataSource extends CalendarDataSource {
   AppointmentDataSource(List<Appointment> source) {
@@ -187,15 +209,11 @@ class CalendarData {
 
 final calData = Provider((ref) => CalendarData(),);
 
-final calProvider = FutureProvider((ref) async {
+final calProvider = FutureProvider((ref) {
   final cal = ref.read(calData);
 
   return cal.loadIcsFile();
 },);
-
-// final currentViewProvider = StateProvider<CalendarView>((ref) {
-//   return CalendarView.schedule;
-// });
 
 
 
