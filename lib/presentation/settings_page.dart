@@ -26,7 +26,7 @@ class SettingsPage extends StatelessWidget {
           
           ),
         ),
-        drawer: drawerMenuBuilder(context),
+        drawer: const DrawerMenu(),
         body: const DropDownMenu()
       );
   }
