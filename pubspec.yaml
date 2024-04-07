@@ -44,11 +44,7 @@ dependencies:
   gap: ^3.0.1
   shared_preferences: ^2.2.2
 
-  firebase_core: ^2.27.1
-  cloud_firestore: ^4.15.9
-  firebase_auth: ^4.17.9
   icalendar_parser: ^2.0.0
-  firebase_messaging: ^14.7.20
   flutter_local_notifications: ^17.0.0
 
   flutter_riverpod: ^2.5.1
