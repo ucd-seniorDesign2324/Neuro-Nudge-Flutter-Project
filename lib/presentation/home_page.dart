@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:nn/methods/drawer_menu.dart';
-import 'package:nn/methods/app_bar.dart';
-import 'package:nn/presentation/new_task_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
+import 'package:http/http.dart' as http;
+// import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-// TODO:
-// Fetch event data and display on list tiles.
-// Define page navigations
+import 'package:nn/data/python_api.dart';
+import 'package:nn/controller/meeting.dart';
+import 'package:nn/methods/drawer_menu.dart';
+import 'package:nn/methods/app_bar.dart';
+import 'package:nn/presentation/new_task_view.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,8 +28,8 @@ class _HomePageState extends State<HomePage> {
     const String appTitle = 'NeuroNudge';
     return Scaffold(
       appBar: appBarBuilder(context, appTitle),
-      drawer: drawerMenuBuilder(context),
-      body: const LoadWidget(),
+      drawer: const DrawerMenu(),
+      body: const CalWidget(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -48,39 +49,72 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class LoadWidget extends ConsumerWidget {
-  const LoadWidget({
+class CalWidget extends ConsumerStatefulWidget {
+  const CalWidget({
     super.key,
   });
-
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final calInfo = ref.watch(calProvider);
+  ConsumerState<CalWidget> createState() => _CalWidgetState();
 
-    return calInfo.when(data: (item) => 
-    SfCalendar(
-            view: CalendarView.schedule,
-            dataSource: AppointmentDataSource(calInfo.value!),
-            headerStyle: const CalendarHeaderStyle(
-              textAlign: TextAlign.center,
-            ),
-            scheduleViewSettings: const ScheduleViewSettings(
-              appointmentItemHeight: 100,
-              appointmentTextStyle: TextStyle(
-                fontSize: 20,
-              ),
-            ),
-          ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, st) => Center(child: Text(e.toString())),
-          );
-  }
 }
 
+class _CalWidgetState extends ConsumerState<CalWidget>{
+  
+  late List<Meeting> appointments = [];
+  CalendarController calController = CalendarController();
 
+  @override
+  void initState() {
+    super.initState();
+    asyncFetch();
+  }
 
+  // Database API call
+  void asyncFetch() async {
+    appointments = await fetchEvents(http.Client());
+  }
 
+  // TODO: Perhaps use FutureBuilder widget for calendar data?
+  @override
+  Widget build(BuildContext context) {
+
+    // print("ITS HAPPENING");
+    final calInfo = ref.watch(calProvider);
+
+    // View changing
+    final view = ref.watch(viewProvider.select((value) => value));
+    calController.view = view;
+
+    return calInfo.when(
+      data: (item) =>
+        SfCalendar(
+          view: view,
+          controller: calController,
+          dataSource: MeetingDataSource(appointments),
+          headerStyle: const CalendarHeaderStyle(
+            textAlign: TextAlign.center,
+          ),
+
+          monthViewSettings: const MonthViewSettings( 
+            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+          ),
+
+          timeSlotViewSettings: const TimeSlotViewSettings( 
+            numberOfDaysInView: 1
+          ),
+
+          scheduleViewSettings: const ScheduleViewSettings(
+            appointmentItemHeight: 100,
+            appointmentTextStyle: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+        ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text(e.toString())),
+            );
+  }
+}
 
 class AppointmentDataSource extends CalendarDataSource {
   AppointmentDataSource(List<Appointment> source) {
@@ -169,9 +203,11 @@ class CalendarData {
 
 final calData = Provider((ref) => CalendarData(),);
 
-final calProvider = FutureProvider((ref) async {
+final calProvider = FutureProvider((ref) {
   final cal = ref.read(calData);
 
   return cal.loadIcsFile();
 },);
+
+
 
