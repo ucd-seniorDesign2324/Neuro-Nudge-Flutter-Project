@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-const List<String> list = <String>['Assignment', 'Project', 'Study'];
+const List<String> list = <String>['Exam','Assignment', 'Project', 'Study'];
 
 class EventTypeDropdown extends StatefulWidget {
   const EventTypeDropdown({super.key});

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nn/methods/evt_type_dropdown.dart';
 import 'package:nn/methods/alarm_dropdown.dart';
 import 'package:nn/methods/recurrence_picker.dart';
+import 'package:nn/data/EventData.dart';
+import 'package:nn/data/process_new_event.dart';
 // import 'package:nn/methods/sub_task_dropdown.dart';
 
 // TODO:
@@ -9,7 +11,9 @@ import 'package:nn/methods/recurrence_picker.dart';
 // Create methods for entering task data. I.e., task name, type, subtasks, etc
 // Implement callback methods for user interactions. I.e., onTouch()
 class NewTaskView extends StatelessWidget {
-  const NewTaskView({super.key});
+  NewTaskView({super.key});
+
+  final GlobalKey<_TaskEditMenuState> _taskEditMenuKey = GlobalKey<_TaskEditMenuState>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +32,19 @@ class NewTaskView extends StatelessWidget {
           //   icon: const Icon(Icons.close)),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: IconButton(onPressed: () {}, icon: const Icon(Icons.save)),
+            child: IconButton(
+              onPressed: () => _taskEditMenuKey.currentState?.onSavePressed(), 
+              icon: const Icon(Icons.save)),
           ),
         ],
       ),
-      body: const TaskEditMenu(),
+      body: TaskEditMenu(key: _taskEditMenuKey),
     );
   }
 }
 
 class TaskEditMenu extends StatefulWidget {
-  const TaskEditMenu({super.key});
+  const TaskEditMenu({Key? key}) : super(key: key);
 
   @override
   State<TaskEditMenu> createState() => _TaskEditMenuState();
@@ -86,6 +92,46 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
         }
       });
     }
+  }
+
+  void onSavePressed() {
+    // 1. Extract data from form fields
+    String title = _titleController.text;
+    String description = _descriptionController.text;
+
+    // 2. Combine date and time for start and end
+    DateTime startDT;
+    DateTime endDT;
+    // if (_startDate != null && _startTime != null) {
+      startDT = DateTime(
+        _startDate!.year,
+        _startDate!.month,
+        _startDate!.day,
+        _startTime!.hour,
+        _startTime!.minute,
+      );
+    // }
+    // if (_endDate != null && _endTime != null) {
+      endDT = DateTime(
+        _endDate!.year,
+        _endDate!.month,
+        _endDate!.day,
+        _endTime!.hour,
+        _endTime!.minute,
+      );
+    // }
+
+    // 3. Create an EventData object
+    EventData eventData = EventData(
+      title: title,
+      description: description,
+      startDateTime: startDT,
+      endDateTime: endDT,
+      eventType: 'Exam'
+    );
+
+    // 4. Process the new event
+    processNewEvent(eventData);
   }
 
   @override
@@ -149,14 +195,14 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
             padding: EdgeInsets.all(8.0),
             child: EventTypeDropdown(),
           ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: AlarmDropdown(),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: RecurrencePicker(),
-          ),
+          // const Padding(
+          //   padding: EdgeInsets.all(8.0),
+          //   child: AlarmDropdown(),
+          // ),
+          // const Padding(
+          //   padding: EdgeInsets.all(16.0),
+          //   child: RecurrencePicker(),
+          // ),
         ],
       ),
     ));
