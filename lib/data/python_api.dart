@@ -9,6 +9,7 @@ Future<List<Meeting>> fetchEvents(http.Client http) async {
 
   if(response.statusCode == 200){
 
+    // Take list of JSON objects and create list of Meeting objects.
     var meetingObjsJson = jsonDecode(response.body)['event'] as List;
     List<Meeting> meetings = meetingObjsJson.map((eventJson) => Meeting.fromJson(eventJson)).toList(); 
     

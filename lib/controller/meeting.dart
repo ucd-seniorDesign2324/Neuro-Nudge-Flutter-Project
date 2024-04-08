@@ -3,35 +3,39 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class Meeting {
   String title;
-  String location;
   DateTime startTime;
   DateTime endTime;
   String description;
+  String recRule;
+  bool isAllDay;
 
   // Constructor
   Meeting({
     required this.title,
     required this.startTime,
     required this.endTime,
-    this.location = "",
     this.description = "",
+    this.recRule = "",
+    this.isAllDay = false,
   });
 
   factory Meeting.fromJson(Map<String, dynamic> json){
     return switch (json){
       {
       'title': String title,
-      'location': String location,
+      'description': String description,
       'startTime': String startTime,
       'endTime': String endTime,
-      'description': String description
+      'rec_rule': String recRule,
+      'isAllDay': bool isAllDay,
       
       } => Meeting(
         title: title,
-        location: location,
+        description: description,
         startTime: DateTime.parse(startTime),
         endTime: DateTime.parse(endTime),
-        description: description,
+        recRule: recRule,
+        isAllDay: isAllDay,
       ),
        _ => throw Exception('Failed to load meeting object')
     };
@@ -45,13 +49,13 @@ class Meeting {
     this.title = title;
   }
 
-  String getLocation() {
-    return location;
-  }
+  // String getLocation() {
+  //   return location;
+  // }
 
-  void setLocation(String location) {
-    this.location = location;
-  }
+  // void setLocation(String location) {
+  //   this.location = location;
+  // }
 
   DateTime getStartTime() {
     return startTime;
