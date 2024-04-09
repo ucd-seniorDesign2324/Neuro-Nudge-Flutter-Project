@@ -6,7 +6,7 @@ Future<void> processNewEvent(EventData eventData) async {
   // Convert EventData object to JSON string
   String jsonBody = json.encode(eventData.toJson());
 
-  String apiUrl = '127.0.0.1:5080/process-new-event';
+  String apiUrl = 'http://10.0.2.2:5080/process-new-event';
 
   try {
     // Send a POST request with the JSON-encoded data
@@ -21,6 +21,7 @@ Future<void> processNewEvent(EventData eventData) async {
     // Check the response status code
     if (response.statusCode == 200) {
       // Handle successful request
+      print(response.body);
       print("Event data successfully sent to the API");
     } else {
       // Handle unsuccessful request
