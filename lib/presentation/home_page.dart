@@ -99,7 +99,7 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
         SfCalendar(
           view: view,
           controller: calController,
-          timeZone: 'Mountain Standard Time',
+          timeZone : 'Mountain Standard Time',
           dataSource: AppointmentDataSource(calInfo.value!),
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,
@@ -170,8 +170,8 @@ class CalendarData {
       String endDtStr = appointmentData['endtime'];
       DateTime startTime = DateTime.parse(startDtStr);
       DateTime endTime = DateTime.parse(endDtStr);
-      print('Start time');
-      print(startTime);
+      // print('Start time');
+      // print(startTime);
       String subject = appointmentData['title'] ?? '';
       bool isAllDay = appointmentData['isallday'] ?? false;
       Color color = Colors.blue; // Assuming all appointments have the same color for simplicity
