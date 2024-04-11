@@ -75,13 +75,7 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
   @override
   void initState() {
     super.initState();
-    //asyncFetch();
   }
-
-  // Database API call
-  // void asyncFetch() async {
-  //   appointments = await fetchEvents(http.Client());
-  // }
 
   // TODO: Perhaps use FutureBuilder widget for calendar data?
   @override

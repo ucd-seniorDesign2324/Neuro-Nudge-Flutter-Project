@@ -6,7 +6,9 @@
   Each option is represented by an icon and text in a row layout.
  */
 
+
 import 'package:flutter/material.dart';
+import 'package:nn/data/python_api.dart';
 
 // Define a StatelessWidget for importing calendar page
 class ImportCalendarPage extends StatelessWidget {
@@ -14,7 +16,7 @@ class ImportCalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    const String pageName = "Import Calender:";
+    const String pageName = "Import Calendar:";
     return  Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),
@@ -29,32 +31,44 @@ class ImportCalendarPage extends StatelessWidget {
           ),
         ),
       ),
-      body: const Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: EdgeInsets.all(8.0),
+           Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.calendar_month_outlined),
+                SizedBox(
+                  width: 275,
+                  child: OutlinedButton.icon(
+                    label: const Text("Upload from Google"),
+                    icon: const Icon(Icons.calendar_month_outlined),
+                    style:  Theme.of(context).outlinedButtonTheme.style,
+                    onPressed: (){
+                      const Placeholder();
+                    },),
                 ),
-                Text("Import from Google"),
               ],
             ),
           ),
+
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.upload_file),
+                SizedBox(
+                  width: 275,
+                  child: OutlinedButton.icon(
+                    label: const Text("Upload .ics file"),
+                    icon: const Icon(Icons.calendar_month_outlined),
+                    style:  Theme.of(context).outlinedButtonTheme.style,
+                    onPressed: () {
+                      importEvents();
+                    },
+                  ),
                 ),
-                Text("Upload .ics file"),
               ],
             ),
           ),
@@ -63,34 +77,3 @@ class ImportCalendarPage extends StatelessWidget {
     );
   }
 }
-
-
-
-// class ImportCalendarPage extends StatelessWidget {
-//   const ImportCalendarPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context){
-//     return const Scaffold(
-//       children: [
-//         Padding(
-//           padding: EdgeInsets.all(8.0),
-//           child: Text("Import Calendar:"),
-//         ),
-//         Row(
-
-//         ),
-//         Center(
-//           child: Row(
-//             children: [
-//               // Icon(Icons.calendar_month_outlined),
-//               Text("Import from Google"),
-//             ],
-//           ),
-//         ),
-
-//       ],
-
-//     );
-//   }
-// }
