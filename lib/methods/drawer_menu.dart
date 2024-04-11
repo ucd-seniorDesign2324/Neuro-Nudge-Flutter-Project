@@ -57,17 +57,8 @@ class DrawerMenu extends ConsumerWidget {
                 ),
 
               onTap: (){
-                // Navigator.pop(context, CalendarView.day);
-                
-                  ref.read(viewProvider.notifier).set(CalendarView.week);
-                
-                
-                // ref.read(viewProvider.notifier).set(CalendarView.day);
+                ref.read(viewProvider.notifier).set(CalendarView.week);
                 Navigator.pop(context);
-                // Navigator.push(
-                //       context,
-                //       MaterialPageRoute(builder: (context) => const DailyView()),
-                // );
               },
             ),
               
@@ -86,13 +77,8 @@ class DrawerMenu extends ConsumerWidget {
                   )
                 ),
                 onTap: (){
-                    ref.read(viewProvider.notifier).set(CalendarView.month);
-                  
+                  ref.read(viewProvider.notifier).set(CalendarView.month);
                   Navigator.pop(context);
-                //   Navigator.push(
-                //       context,
-                //       MaterialPageRoute(builder: (context) => const MonthlyView()),
-                // );
               }
             ),
             
@@ -117,14 +103,8 @@ class DrawerMenu extends ConsumerWidget {
                   )
                 ),
                 onTap: (){
-                // Navigator.pop(context, CalendarView.schedule);
-                  ref.read(viewProvider.notifier).set(CalendarView.schedule);
-                
+                ref.read(viewProvider.notifier).set(CalendarView.schedule);
                 Navigator.pop(context);
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(builder: (context) => const HomePage()),
-                // );
               }
             ),
 

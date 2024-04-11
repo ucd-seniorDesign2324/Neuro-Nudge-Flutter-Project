@@ -1,5 +1,14 @@
+/*
+  This Dart code defines a StatelessWidget called ImportCalendarPage, 
+  which represents a page for importing a calendar. 
+  It contains an AppBar with a custom title and icon, 
+  and a body with two options for importing calendar data: "Import from Google" and "Upload .ics file". 
+  Each option is represented by an icon and text in a row layout.
+ */
+
 import 'package:flutter/material.dart';
 
+// Define a StatelessWidget for importing calendar page
 class ImportCalendarPage extends StatelessWidget {
   const ImportCalendarPage({super.key});
 

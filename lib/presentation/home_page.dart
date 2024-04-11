@@ -1,3 +1,12 @@
+/*
+  This Dart code defines a Flutter HomePage widget, which includes a CalWidget to display a calendar view. 
+  The calendar view is powered by the Syncfusion Flutter Calendar package. 
+  The CalWidget is a ConsumerWidget, meaning it can access provider data using ref.watch. 
+  The appointments data is fetched asynchronously from a Supabase database using the CalendarData class. 
+  The appointments are then displayed in the calendar using the AppointmentDataSource class.
+ */
+
+
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -6,7 +15,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:nn/main.dart';
 import 'package:http/http.dart' as http;
-// import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:nn/data/python_api.dart';
 import 'package:nn/controller/meeting.dart';
@@ -37,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const NewTaskView()),
+            MaterialPageRoute(builder: (context) => NewTaskView()),
           );
         },
         child: const Icon(
@@ -71,9 +79,9 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
   }
 
   // Database API call
-  void asyncFetch() async {
-    appointments = await fetchEvents(http.Client());
-  }
+  // void asyncFetch() async {
+  //   appointments = await fetchEvents(http.Client());
+  // }
 
   // TODO: Perhaps use FutureBuilder widget for calendar data?
   @override
@@ -91,6 +99,7 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
         SfCalendar(
           view: view,
           controller: calController,
+          timeZone: 'Mountain Standard Time',
           dataSource: AppointmentDataSource(calInfo.value!),
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,
