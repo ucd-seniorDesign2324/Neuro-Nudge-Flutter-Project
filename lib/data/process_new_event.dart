@@ -1,7 +1,15 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:nn/data/EventData.dart';
+/*
+ This Dart code defines a function processNewEvent that takes an EventData object, 
+ converts it to a JSON string, and sends it to a specified API endpoint using a POST request. 
+ It handles both successful and unsuccessful responses, printing appropriate messages to the console. 
+ Any errors that occur during the process are caught and logged. 
+ */
 
+import 'dart:convert'; // Provides encoding and decoding functions for JSON and UTF-8
+import 'package:http/http.dart' as http; // Provides functions for making HTTP requests
+import 'package:nn/data/EventData.dart'; // Importing the EventData class
+
+// Define a function to process new event data asynchronously
 Future<void> processNewEvent(EventData eventData) async {
   // Convert EventData object to JSON string
   String jsonBody = json.encode(eventData.toJson());

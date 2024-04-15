@@ -29,6 +29,19 @@ final ThemeData appThemeData = ThemeData(
   searchBarTheme: const SearchBarThemeData( 
     hintStyle: MaterialStatePropertyAll<TextStyle>(TextStyle(fontSize: 20, fontWeight: FontWeight.normal)),
     padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0))
-  )
+  ),
+
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      elevation: 5,
+      textStyle: GoogleFonts.poppins(
+        fontSize: 20,
+        fontWeight: FontWeight.bold
+        ),
+      side: const BorderSide(width: 70.0),
+    ))
 
 );

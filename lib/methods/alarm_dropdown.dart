@@ -1,4 +1,13 @@
-
+/*
+  This Dart code defines a dropdown widget AlarmDropdown for selecting alarm duration options 
+  before an event. 
+  It contains a list of alarm options in minutes (list). 
+  The dropdown menu is populated with these options, 
+  and the user can select one option. When an option is selected, 
+  the state of the widget is updated to reflect the new selection. 
+  The selected value is stored in the dropdownValue variable and is updated using the setState() method. 
+  The dropdown displays a hint text and an icon for better user interaction.
+ */
 
 import 'package:flutter/material.dart';
 

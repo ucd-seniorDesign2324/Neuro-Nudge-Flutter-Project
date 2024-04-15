@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nn/methods/evt_type_dropdown.dart';
-import 'package:nn/methods/alarm_dropdown.dart';
-import 'package:nn/methods/recurrence_picker.dart';
+// import 'package:nn/methods/alarm_dropdown.dart';
+// import 'package:nn/methods/recurrence_picker.dart';
 import 'package:nn/data/EventData.dart';
 import 'package:nn/data/process_new_event.dart';
 // import 'package:nn/methods/sub_task_dropdown.dart';

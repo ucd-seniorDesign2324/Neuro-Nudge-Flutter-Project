@@ -1,3 +1,12 @@
+/*
+  This Dart code defines a Flutter HomePage widget, which includes a CalWidget to display a calendar view. 
+  The calendar view is powered by the Syncfusion Flutter Calendar package. 
+  The CalWidget is a ConsumerWidget, meaning it can access provider data using ref.watch. 
+  The appointments data is fetched asynchronously from a Supabase database using the CalendarData class. 
+  The appointments are then displayed in the calendar using the AppointmentDataSource class.
+ */
+
+
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -6,7 +15,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:nn/main.dart';
 import 'package:http/http.dart' as http;
-// import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:nn/data/python_api.dart';
 import 'package:nn/controller/meeting.dart';
@@ -67,12 +75,6 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
   @override
   void initState() {
     super.initState();
-    //asyncFetch();
-  }
-
-  // Database API call
-  void asyncFetch() async {
-    appointments = await fetchEvents(http.Client());
   }
 
   // TODO: Perhaps use FutureBuilder widget for calendar data?
