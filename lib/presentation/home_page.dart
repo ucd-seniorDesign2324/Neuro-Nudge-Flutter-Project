@@ -78,7 +78,6 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
   @override
   Widget build(BuildContext context) {
 
-    // print("ITS HAPPENING");
     final calInfo = ref.watch(calProvider);
 
     // View changing
