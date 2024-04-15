@@ -13,9 +13,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-/// Represents a meeting event.
 class Meeting {
-
   String title;
   DateTime startTime;
   DateTime endTime;
@@ -23,26 +21,37 @@ class Meeting {
   String recRule;
   bool isAllDay;
 
-  /// Constructor for [Meeting].
+  // Constructor
   Meeting({
     required this.title,
     required this.startTime,
     required this.endTime,
-    this.location = '',
-    this.description = '',
+    this.description = "",
+    this.recRule = "",
+    this.isAllDay = false,
   });
 
-  /// Factory constructor to create a [Meeting] object from JSON data.
   factory Meeting.fromJson(Map<String, dynamic> json) {
-    return Meeting(
-      title: json['title'] ?? '',
-      location: json['location'] ?? '',
-      startTime: DateTime.parse(json['startTime']),
-      endTime: DateTime.parse(json['endTime']),
-      description: json['description'] ?? '',
-    );
+    return switch (json) {
+      {
+        'title': String title,
+        'description': String description,
+        'startTime': String startTime,
+        'endTime': String endTime,
+        'rec_rule': String recRule,
+        'isAllDay': bool isAllDay,
+      } =>
+        Meeting(
+          title: title,
+          description: description,
+          startTime: DateTime.parse(startTime),
+          endTime: DateTime.parse(endTime),
+          recRule: recRule,
+          isAllDay: isAllDay,
+        ),
+      _ => throw Exception('Failed to load meeting object')
+    };
   }
-
   // Getter and setter methods
   String getTitle() {
     return title;
@@ -85,35 +94,34 @@ class Meeting {
   }
 }
 
-/// Data source for calendar events using [Meeting] objects.
+// Data Source
 class MeetingDataSource extends CalendarDataSource {
-  /// Constructor for [MeetingDataSource].
   MeetingDataSource(List<Meeting> source) {
     appointments = source;
   }
 
   @override
   DateTime getStartTime(int index) {
-    return appointments![index].startTime;
+    return appointments![index].from;
   }
 
   @override
   DateTime getEndTime(int index) {
-    return appointments![index].endTime;
+    return appointments![index].to;
   }
 
   @override
   String getSubject(int index) {
-    return appointments![index].title;
+    return appointments![index].eventName;
   }
 
   @override
   Color getColor(int index) {
-    return Colors.blue; // Placeholder color, can be customized based on the meeting type
+    return appointments![index].background;
   }
 
   @override
   bool isAllDay(int index) {
-    return false; // Assuming all meetings are not all-day events
+    return appointments![index].isAllDay;
   }
 }
