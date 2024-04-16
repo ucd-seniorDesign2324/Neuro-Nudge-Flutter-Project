@@ -1,8 +1,14 @@
-
+/*
+  This Dart code defines a Flutter widget called EventTypeDropdown, 
+  which displays a dropdown menu of event types. 
+  The dropdown is populated with items from the list constant. 
+  When an item is selected, the dropdown value is updated accordingly. 
+  The widget is implemented as a stateful widget to manage the dropdown's state.
+*/ 
 
 import 'package:flutter/material.dart';
 
-const List<String> list = <String>['Assignment', 'Project', 'Study'];
+const List<String> list = <String>['Exam','HW', 'Quiz', 'Midterm', 'Lab', 'Final',  'Project', 'Study'];
 
 class EventTypeDropdown extends StatefulWidget {
   const EventTypeDropdown({super.key});

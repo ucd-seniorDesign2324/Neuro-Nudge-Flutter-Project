@@ -1,11 +1,20 @@
+/*
+  This Dart code defines a Flutter HomePage widget, which includes a CalWidget to display a calendar view. 
+  The calendar view is powered by the Syncfusion Flutter Calendar package. 
+  The CalWidget is a ConsumerWidget, meaning it can access provider data using ref.watch. 
+  The appointments data is fetched asynchronously from a Supabase database using the CalendarData class. 
+  The appointments are then displayed in the calendar using the AppointmentDataSource class.
+ */
+
+
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
+import 'package:nn/main.dart';
 import 'package:http/http.dart' as http;
-// import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:nn/data/python_api.dart';
 import 'package:nn/controller/meeting.dart';
@@ -36,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const NewTaskView()),
+            MaterialPageRoute(builder: (context) => NewTaskView()),
           );
         },
         child: const Icon(
@@ -66,12 +75,6 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
   @override
   void initState() {
     super.initState();
-    asyncFetch();
-  }
-
-  // Database API call
-  void asyncFetch() async {
-    appointments = await fetchEvents(http.Client());
   }
 
   // TODO: Perhaps use FutureBuilder widget for calendar data?
@@ -89,7 +92,8 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
         SfCalendar(
           view: view,
           controller: calController,
-          dataSource: MeetingDataSource(appointments),
+          timeZone : 'Mountain Standard Time',
+          dataSource: AppointmentDataSource(calInfo.value!),
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,
           ),
@@ -146,67 +150,124 @@ class AppointmentDataSource extends CalendarDataSource {
   }
 }
 
-
 class CalendarData {
-  Future<List<Appointment>> loadIcsFile() async{
-    String fileContents = await rootBundle.loadString('assets/data.ics');
-    final icsObj = ICalendar.fromString(fileContents);
-    
+  Future<List<Appointment>> loadAppointmentsFromSupabase() async {
+    final response = await supabase
+        .from('appointments')
+        .select('title, starttime, endtime, isallday');
 
-    List<Appointment> appointments = <Appointment>[];
-    Map<String, dynamic> calendarData = icsObj.toJson();
-    List<dynamic> eventData = calendarData['data'];
-    
-    for (var event in eventData)
-    // for (var i = 0; i < 5; i++) 
-    {
-      // var event = eventData[i];
-      // print('checked');
-      // Only create an Appointment if the event entry is a VEVENT
-      // Check if the event has a 'type' key and if its value is 'VEVENT'
-      if (event.containsKey('type') && event['type'] == "VEVENT") {
-        // print('check passed');
-        // String startStr = event['dtstart']['dt'];
-        // String endStr = event['dtend']['dt'];
-        // print(event);
-        // print(startStr);
-        // print(endStr);
-        DateTime startTime = DateTime.parse(event['dtstart']['dt']);
-        DateTime endTime;
-        if (event.containsKey('dtend')) {
-          endTime = DateTime.parse(event['dtend']['dt']);
-        }
-        else {
-          endTime = startTime.add(const Duration(hours: 1));
-        }
-        // print(startTime);
-        // print(endTime);
-        // print(event['subject']);
-        String subject = event['summary'];
-        // String notes = event['description'];
-        Color color = Colors.blue;
+    final List<Appointment> appointments = [];
 
-        appointments.add(Appointment(
-          startTime: startTime,
-          endTime: endTime,
-          subject: subject,
-          // notes: notes,
-          color: color,
-          // Add other fields as we need them. Just did a few to start.
-        ));
-      }
+    for (final appointmentData in response) {
+      String startDtStr = appointmentData['starttime'];
+      String endDtStr = appointmentData['endtime'];
+      DateTime startTime = DateTime.parse(startDtStr);
+      DateTime endTime = DateTime.parse(endDtStr);
+      // print('Start time');
+      // print(startTime);
+      String subject = appointmentData['title'] ?? '';
+      bool isAllDay = appointmentData['isallday'] ?? false;
+      Color color = Colors.blue; // Assuming all appointments have the same color for simplicity
+
+      appointments.add(Appointment(
+        startTime: startTime,
+        endTime: endTime,
+        subject: subject,
+        color: color,
+        isAllDay: isAllDay,
+      ));
     }
     return appointments;
   }
+
+  // Helper function to format the time zone offset as a string
+  // String _formatTimeZoneOffset(Duration offset) {
+  //   String sign = offset.isNegative ? "-" : "+";
+  //   int hours = offset.inHours.abs();
+  //   int minutes = (offset.inMinutes.abs() % 60);
+  //   return "$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}";
+  // }
+
+  // DateTime _supabaseToFlutterDateTime(String dateTimeStr) {
+  // // Replace the space with 'T' and remove the dot in the timezone offset
+  // String isoDateTimeStr = dateTimeStr.replaceAll(' ', 'Z').replaceAll('.00', ':00');
+
+  // // Now the string should be in a format that DateTime.parse can handle
+  // DateTime dateTime = DateTime.parse(isoDateTimeStr);
+
+  // return dateTime;
+
+  // }
 }
 
-final calData = Provider((ref) => CalendarData(),);
+final calData = Provider(
+  (ref) => CalendarData(),
+);
 
-final calProvider = FutureProvider((ref) {
-  final cal = ref.read(calData);
+final calProvider = FutureProvider(
+  (ref) {
+    final cal = ref.read(calData);
 
-  return cal.loadIcsFile();
-},);
+    return cal.loadAppointmentsFromSupabase();
+  },
+);
+
+
+// class CalendarData {
+//   Future<List<Appointment>> loadIcsFile() async{
+//     String fileContents = await rootBundle.loadString('assets/data.ics');
+//     final icsObj = ICalendar.fromString(fileContents);
+    
+
+//     List<Appointment> appointments = <Appointment>[];
+//     Map<String, dynamic> calendarData = icsObj.toJson();
+//     List<dynamic> eventData = calendarData['data'];
+    
+//     for (var event in eventData)
+//     // for (var i = 0; i < 5; i++) 
+//     {
+//       // var event = eventData[i];
+//       // print('checked');
+//       // Only create an Appointment if the event entry is a VEVENT
+//       // Check if the event has a 'type' key and if its value is 'VEVENT'
+//       if (event.containsKey('type') && event['type'] == "VEVENT") {
+//         // print('check passed');
+//         // String startStr = event['dtstart']['dt'];
+//         // String endStr = event['dtend']['dt'];
+//         // print(event);
+//         // print(startStr);
+//         // print(endStr);
+//         DateTime startTime = DateTime.parse(event['dtstart']['dt']);
+//         DateTime endTime;
+//         if (event.containsKey('dtend')) {
+//           endTime = DateTime.parse(event['dtend']['dt']);
+//         }
+//         else {
+//           endTime = startTime.add(const Duration(hours: 1));
+//         }
+//         // print(startTime);
+//         // print(endTime);
+//         // print(event['subject']);
+//         String subject = event['summary'];
+//         // String notes = event['description'];
+//         Color color = Colors.blue;
+
+//         appointments.add(Appointment(
+//           startTime: startTime,
+//           endTime: endTime,
+//           subject: subject,
+//           // notes: notes,
+//           color: color,
+//           // Add other fields as we need them. Just did a few to start.
+//         ));
+//       }
+//     }
+//     print(appointments);
+//     return appointments;
+//   }
+// }
+
+
 
 
 
