@@ -34,7 +34,7 @@ class Meeting {
   factory Meeting.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'title':       String title,
+        'summary':     String title,
         'description': String description,
         'startTime':   String startTime,
         'endTime':     String endTime,

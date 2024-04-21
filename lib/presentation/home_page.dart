@@ -159,7 +159,7 @@ class CalendarData {
     List<Meeting> chunks = chunkData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
 
     final eventData = await supabase
-        .from('chunks')
+        .from('events')
         .select('summary, start_time, end_time, isallday, vrecur');
 
     List<Meeting> events = eventData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
