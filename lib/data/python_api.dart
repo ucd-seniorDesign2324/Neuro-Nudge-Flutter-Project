@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 // Utilizes factory function in Meeting class to instantiate objects.
 Future<List<Meeting>> fetchEvents(http.Client http) async {
   final data = await supabase.from('assignments').select('*');
-  print(data);
+
   List<Meeting> meetings = data.map((eventJson) => Meeting.fromJson(eventJson)).toList(); 
   
   return meetings;
@@ -15,9 +15,9 @@ Future<List<Meeting>> fetchEvents(http.Client http) async {
 
 // Get request for "importing" ICS file
 Future<http.Response> importEvents() async {
-    
+
     try{
-      final response = await http.get(Uri.parse('https://127.0.0.1:8000/load-ics'));
+      final response = await http.get(Uri.parse('https://10.0.2.2:8000/load-ics'));
       if(response.statusCode == 200){
         return response;
       }

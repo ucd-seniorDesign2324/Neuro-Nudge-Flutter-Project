@@ -93,7 +93,7 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
           view: view,
           controller: calController,
           timeZone : 'Mountain Standard Time',
-          dataSource: AppointmentDataSource(calInfo.value!),
+          dataSource: MeetingDataSource(calInfo.value!),
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,
           ),
@@ -151,33 +151,40 @@ class AppointmentDataSource extends CalendarDataSource {
 }
 
 class CalendarData {
-  Future<List<Appointment>> loadAppointmentsFromSupabase() async {
-    final response = await supabase
-        .from('appointments')
-        .select('title, starttime, endtime, isallday');
+  Future<List<Meeting>> loadAppointmentsFromSupabase() async {
+    final chunkData = await supabase
+        .from('chunks')
+        .select('summary, start_time, end_time, isallday, vrecur');
 
-    final List<Appointment> appointments = [];
+    List<Meeting> chunks = chunkData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
 
-    for (final appointmentData in response) {
-      String startDtStr = appointmentData['starttime'];
-      String endDtStr = appointmentData['endtime'];
-      DateTime startTime = DateTime.parse(startDtStr);
-      DateTime endTime = DateTime.parse(endDtStr);
-      // print('Start time');
-      // print(startTime);
-      String subject = appointmentData['title'] ?? '';
-      bool isAllDay = appointmentData['isallday'] ?? false;
-      Color color = Colors.blue; // Assuming all appointments have the same color for simplicity
+    final eventData = await supabase
+        .from('chunks')
+        .select('summary, start_time, end_time, isallday, vrecur');
 
-      appointments.add(Appointment(
-        startTime: startTime,
-        endTime: endTime,
-        subject: subject,
-        color: color,
-        isAllDay: isAllDay,
-      ));
-    }
-    return appointments;
+    List<Meeting> events = eventData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
+
+    final meetings = chunks + events;
+    // final List<Meeting> appointments = [];
+
+    // for (final appointmentData in response) {
+    //   String startDtStr = appointmentData['starttime'];
+    //   String endDtStr = appointmentData['endtime'];
+    //   DateTime startTime = DateTime.parse(startDtStr);
+    //   DateTime endTime = DateTime.parse(endDtStr);
+    //   String subject = appointmentData['title'] ?? '';
+    //   bool isAllDay = appointmentData['isallday'] ?? false;
+    //   String recurrenceRule = appointmentData['vrecur'] ?? '';
+    //   Color color = Colors.blue; // Assuming all appointments have the same color for simplicity
+
+    //   appointments.add(Meeting(
+    //     startTime: startTime,
+    //     endTime: endTime,
+    //     description: ,
+    //     isAllDay: isAllDay,
+    //   ));
+    // }
+    return meetings;
   }
 
   // Helper function to format the time zone offset as a string
@@ -211,63 +218,3 @@ final calProvider = FutureProvider(
     return cal.loadAppointmentsFromSupabase();
   },
 );
-
-
-// class CalendarData {
-//   Future<List<Appointment>> loadIcsFile() async{
-//     String fileContents = await rootBundle.loadString('assets/data.ics');
-//     final icsObj = ICalendar.fromString(fileContents);
-    
-
-//     List<Appointment> appointments = <Appointment>[];
-//     Map<String, dynamic> calendarData = icsObj.toJson();
-//     List<dynamic> eventData = calendarData['data'];
-    
-//     for (var event in eventData)
-//     // for (var i = 0; i < 5; i++) 
-//     {
-//       // var event = eventData[i];
-//       // print('checked');
-//       // Only create an Appointment if the event entry is a VEVENT
-//       // Check if the event has a 'type' key and if its value is 'VEVENT'
-//       if (event.containsKey('type') && event['type'] == "VEVENT") {
-//         // print('check passed');
-//         // String startStr = event['dtstart']['dt'];
-//         // String endStr = event['dtend']['dt'];
-//         // print(event);
-//         // print(startStr);
-//         // print(endStr);
-//         DateTime startTime = DateTime.parse(event['dtstart']['dt']);
-//         DateTime endTime;
-//         if (event.containsKey('dtend')) {
-//           endTime = DateTime.parse(event['dtend']['dt']);
-//         }
-//         else {
-//           endTime = startTime.add(const Duration(hours: 1));
-//         }
-//         // print(startTime);
-//         // print(endTime);
-//         // print(event['subject']);
-//         String subject = event['summary'];
-//         // String notes = event['description'];
-//         Color color = Colors.blue;
-
-//         appointments.add(Appointment(
-//           startTime: startTime,
-//           endTime: endTime,
-//           subject: subject,
-//           // notes: notes,
-//           color: color,
-//           // Add other fields as we need them. Just did a few to start.
-//         ));
-//       }
-//     }
-//     print(appointments);
-//     return appointments;
-//   }
-// }
-
-
-
-
-

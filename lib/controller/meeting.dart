@@ -34,12 +34,12 @@ class Meeting {
   factory Meeting.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'title': String title,
+        'title':       String title,
         'description': String description,
-        'startTime': String startTime,
-        'endTime': String endTime,
-        'rec_rule': String recRule,
-        'isAllDay': bool isAllDay,
+        'startTime':   String startTime,
+        'endTime':     String endTime,
+        'vrecur':      String recRule,
+        'isAllDay':    bool isAllDay,
       } =>
         Meeting(
           title: title,
@@ -92,6 +92,10 @@ class Meeting {
   void setDescription(String description) {
     this.description = description;
   }
+
+   String getRecRule(int index){
+    return recRule;
+  }
 }
 
 // Data Source
@@ -123,5 +127,10 @@ class MeetingDataSource extends CalendarDataSource {
   @override
   bool isAllDay(int index) {
     return appointments![index].isAllDay;
+  }
+
+  @override
+  String getRecRule(int index){
+    return appointments![index].recRule;
   }
 }
