@@ -9,6 +9,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
+import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -21,6 +22,7 @@ import 'package:nn/controller/meeting.dart';
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 import 'package:nn/presentation/new_task_view.dart';
+import 'package:nn/presentation/smart_add_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,6 +33,35 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FloatingSearchBarController controller = FloatingSearchBarController();
+  final GlobalKey<AnimatedFloatingActionButtonState> key = GlobalKey();
+
+  Widget smartAddButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SmartAddPage()),
+        );
+      },
+      heroTag: "smartAdd",
+      tooltip: 'Smart Add',
+      child: Icon(Icons.smart_button),
+    );
+  }
+
+  Widget formAddButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NewTaskView()),
+        );
+      },
+      heroTag: "formAdd",
+      tooltip: 'Form Add',
+      child: Icon(Icons.format_list_bulleted),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +70,12 @@ class _HomePageState extends State<HomePage> {
       appBar: appBarBuilder(context, appTitle),
       drawer: const DrawerMenu(),
       body: const CalWidget(),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewTaskView()),
-          );
-        },
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 45,
-        ),
+      floatingActionButton: AnimatedFloatingActionButton(
+        fabButtons: <Widget>[smartAddButton(), formAddButton()],
+        key: key,
+        colorStartAnimation: Colors.blue,
+        colorEndAnimation: Colors.red,
+        animatedIconData: AnimatedIcons.menu_close,
       ),
     );
   }
@@ -112,6 +135,17 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
               fontSize: 20,
             ),
           ),
+          onTap: (CalendarTapDetails details) {
+          if (details.appointments != null &&
+              details.targetElement == CalendarElement.appointment) {
+            final Meeting meeting = details.appointments!.first;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NewTaskView(meeting: meeting)),
+            );
+          }
+        },
         ),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, st) => Center(child: Text(e.toString())),
@@ -152,19 +186,39 @@ class AppointmentDataSource extends CalendarDataSource {
 
 class CalendarData {
   Future<List<Meeting>> loadAppointmentsFromSupabase() async {
+    // final eventData = await supabase
+    //     .from('appointments')
+    //     .select('summary, description, start_time, end_time, vrecur, isallday, type, id');
+    print('making request for chunks.');
     final chunkData = await supabase
         .from('chunks')
-        .select('summary, start_time, end_time, isallday, vrecur');
-
-    List<Meeting> chunks = chunkData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
-
+        .select('summary, start_time, end_time, id');
+    print('Parsing chunks.');
+    List<Meeting> chunks =
+        chunkData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
+    print('making request for events.');
     final eventData = await supabase
         .from('events')
-        .select('summary, start_time, end_time, isallday, vrecur');
+        .select('class_id, summary, description, start_time, end_time');
+    print('Parsing events.');
 
-    List<Meeting> events = eventData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
+    List<Map<String, dynamic>> transformedEventData = eventData.map<Map<String, dynamic>>((event) {
+      return {
+        'id': event['class_id'],  // Aliasing 'class_id' to 'id'
+        'summary': event['summary'],
+        'description': event['description'],
+        'start_time': event['start_time'],
+        'end_time': event['end_time'],
+      };
+    }).toList();
+
+    List<Meeting> events =
+        transformedEventData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
 
     final meetings = chunks + events;
+
+    print('loading meeting objects worked');
+    // final meetings = events;
     // final List<Meeting> appointments = [];
 
     // for (final appointmentData in response) {
