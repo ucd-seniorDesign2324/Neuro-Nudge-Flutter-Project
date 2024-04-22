@@ -19,6 +19,7 @@ import 'package:nn/main.dart';
 
 class Meeting extends Appointment {
   int dbID;
+  String eventType;
 
   // Constructor
   Meeting({
@@ -28,7 +29,7 @@ class Meeting extends Appointment {
     recurrenceRule = "",
     notes = "",
     isAllDay = false,
-    // this.type = '',
+    this.eventType = '',
     required this.dbID
   }) : super(
           subject: subject,
@@ -48,6 +49,7 @@ class Meeting extends Appointment {
       recurrenceRule: json['vrecur'] as String? ?? "",
       isAllDay: json['isallday'] as bool? ?? false,
       dbID: json['id'] as int,
+      eventType: json['eventType'] as String? ?? ""
     );
   }
 
@@ -58,8 +60,8 @@ class Meeting extends Appointment {
         'end_time': endTime.toIso8601String(),
         'isAllDay' : isAllDay,
         'recurrence' : recurrenceRule, 
-        'id' : dbID
-        // 'eventType': eventType,
+        'id' : dbID,
+        'eventType': eventType,
       };
 
 }
