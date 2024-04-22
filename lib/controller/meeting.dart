@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class Meeting extends Appointment {
-  // String type;
   int dbID;
 
   // Constructor
@@ -72,7 +71,7 @@ class MeetingDataSource extends CalendarDataSource {
 
   @override
   Color getColor(int index) {
-    return getAppointments(index).color; // Assuming you define color in Meeting or manage default
+    return getAppointments(index).color;
   }
 
   @override
@@ -85,7 +84,6 @@ class MeetingDataSource extends CalendarDataSource {
     return getAppointments(index).recurrenceRule;
   }
 
-  // Example of how you might utilize dbID if needed:
   int getDbID(int index) {
     return getAppointments(index).dbID;
   }
