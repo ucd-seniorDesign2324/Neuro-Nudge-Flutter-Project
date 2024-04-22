@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter_config/flutter_config.dart';
 import 'package:nn/presentation/new_task_view.dart';
+import 'package:nn/controller/meeting.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -14,11 +16,10 @@ class _SmartAddPageState extends State<SmartAddPage> {
   final TextEditingController _controller = TextEditingController();
 
   Future<void> _sendForParsing() async {
-    // Your API endpoint
-    const String url = 'https://yourapi.com/parse-event';
-
-    // API call using the user's input
-    final response = await http.post(Uri.parse(url), body: {
+    // String url = FlutterConfig.get('OPENAI-SmartAdd-Thread');
+    // String key = FlutterConfig.get('OPENAI-API-Key');
+    // API call to text parser GPT
+    final response = await http.post(Uri.parse(''), body: {
       'eventText': _controller.text,
     });
 
@@ -26,12 +27,13 @@ class _SmartAddPageState extends State<SmartAddPage> {
       // Assuming the response is a JSON
       final Map<String, dynamic> eventDetails = json.decode(response.body);
 
+      Meeting newMeeting = Meeting.fromJson(eventDetails);
       // Redirect to Manual Add Page with the event details
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           //builder: (context) => NewTaskView(eventDetails: eventDetails)
-          builder: (context) => NewTaskView(),
+          builder: (context) => NewTaskView(meeting: newMeeting),
         ),
       );
     } else {

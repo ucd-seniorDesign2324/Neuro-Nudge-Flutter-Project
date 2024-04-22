@@ -20,6 +20,9 @@ void main() async {
   Supabase.initialize(
     url: 'https://fgocfoakntmlhgtftrzh.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnb2Nmb2FrbnRtbGhndGZ0cnpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTE2ODkyMTUsImV4cCI6MjAyNzI2NTIxNX0.s5dAWy-DSa1EBfKjhpGOOcax6S7QUsh7xCHPFgKlBn8',
+    realtimeClientOptions: const RealtimeClientOptions(
+      eventsPerSecond: 2,
+    )
   );
 
   // Sign in with Supabase credentials
@@ -35,6 +38,13 @@ void main() async {
 }
 
 final supabase = Supabase.instance.client; // Supabase client instance
+
+// // Listen to inserts
+// supabase.channel('public:chunks').onPostgresChanges(
+//         event: PostgresChangeEvent.insert,
+//         schema: 'public',
+//         table: 'chunks',
+//         callback: handleInserts).subscribe();
 
 // Main application widget
 class MyApp extends StatelessWidget {

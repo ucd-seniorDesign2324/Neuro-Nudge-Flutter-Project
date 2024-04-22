@@ -6,7 +6,6 @@
   The appointments are then displayed in the calendar using the AppointmentDataSource class.
  */
 
-
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
@@ -16,7 +15,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:nn/main.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:rxdart/rxdart.dart';
 import 'package:nn/data/python_api.dart';
 import 'package:nn/controller/meeting.dart';
 import 'package:nn/methods/drawer_menu.dart';
@@ -24,14 +23,13 @@ import 'package:nn/methods/app_bar.dart';
 import 'package:nn/presentation/new_task_view.dart';
 import 'package:nn/presentation/smart_add_page.dart';
 
-class HomePage extends StatefulWidget {
+final calendarViewControllerProvider = StateProvider<CalendarView>((ref) => CalendarView.schedule);
+
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+  Widget build(BuildContext context, WidgetRef ref) {
   final FloatingSearchBarController controller = FloatingSearchBarController();
   final GlobalKey<AnimatedFloatingActionButtonState> key = GlobalKey();
 
@@ -63,15 +61,31 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    const String appTitle = 'NeuroNudge';
+  Widget loadICSButton() {
+  return FloatingActionButton(
+    onPressed: () async {
+      await loadICSRequest();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    },
+    heroTag: "loadICS",
+    tooltip: 'Load ICS File',
+    child: Icon(Icons.file_upload),
+  );
+}
+
+  final Stream<List<Meeting>> meetingStream = streamMeetings();
+
+
+  const String appTitle = 'NeuroNudge';
     return Scaffold(
       appBar: appBarBuilder(context, appTitle),
       drawer: const DrawerMenu(),
-      body: const CalWidget(),
+      body: CalWidget(meetingStream: meetingStream,),
       floatingActionButton: AnimatedFloatingActionButton(
-        fabButtons: <Widget>[smartAddButton(), formAddButton()],
+        fabButtons: <Widget>[loadICSButton(), formAddButton(), smartAddButton(),],
         key: key,
         colorStartAnimation: Colors.blue,
         colorEndAnimation: Colors.red,
@@ -81,42 +95,46 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class CalWidget extends ConsumerStatefulWidget {
+class CalWidget extends ConsumerWidget {
+
+  final Stream<List<Meeting>> meetingStream;
+
   const CalWidget({
-    super.key,
+    super.key, required this.meetingStream
   });
+
+
+
+  // final calInfo = ref.watch(calProvider);
+
+  // // View changing
+  // final view = ref.watch(viewProvider.select((value) => value));
+  // calController.view = view;
+
   @override
-  ConsumerState<CalWidget> createState() => _CalWidgetState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    // return calInfo.when(
+    //   data: (item) =>
+    final CalendarController calendarController = CalendarController();
+    final calendarView = ref.watch(calendarViewControllerProvider);
+    return StreamBuilder<List<Meeting>>(
+      stream: meetingStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasData) {
+          // Use a custom data source with the list of meetings
+          MeetingDataSource dataSource = MeetingDataSource(snapshot.data!);
 
-}
-
-class _CalWidgetState extends ConsumerState<CalWidget>{
-  
-  late List<Meeting> appointments = [];
-  CalendarController calController = CalendarController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  // TODO: Perhaps use FutureBuilder widget for calendar data?
-  @override
-  Widget build(BuildContext context) {
-
-    final calInfo = ref.watch(calProvider);
-
-    // View changing
-    final view = ref.watch(viewProvider.select((value) => value));
-    calController.view = view;
-
-    return calInfo.when(
-      data: (item) =>
-        SfCalendar(
-          view: view,
-          controller: calController,
+        return SfCalendar(
+          view: calendarView,
+          controller: calendarController,
           timeZone : 'Mountain Standard Time',
-          dataSource: MeetingDataSource(calInfo.value!),
+          dataSource: dataSource,
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,
           ),
@@ -146,129 +164,62 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
             );
           }
         },
-        ),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, st) => Center(child: Text(e.toString())),
-            );
+        );
+        } else {
+          return Text('No data available');
+        }
+      },
+      // loading: () => const Center(child: CircularProgressIndicator()),
+      // error: (e, st) => Center(child: Text(e.toString())),
+    );
   }
 }
 
-class AppointmentDataSource extends CalendarDataSource {
-  AppointmentDataSource(List<Appointment> source) {
-    appointments = source;
-  }
 
-  @override
-  DateTime getStartTime(int index) {
-    return appointments![index].from;
-  }
+Stream<List<Meeting>> streamMeetings() {
+  final chunkStream = supabase.from('chunks').stream(primaryKey: ['id']);
 
-  @override
-  DateTime getEndTime(int index) {
-    return appointments![index].to;
-  }
+  // List<Meeting> chunks =
+  //     chunkData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
 
-  @override
-  String getSubject(int index) {
-    return appointments![index].eventName;
-  }
+  // final eventData = await supabase
+  //     .from('events')
+  //     .select('class_id, summary, description, start_time, end_time');
 
-  @override
-  Color getColor(int index) {
-    return appointments![index].background;
-  }
+  final eventStream = supabase.from('events').stream(primaryKey: ['class_id']);
 
-  @override
-  bool isAllDay(int index) {
-    return appointments![index].isAllDay;
-  }
-}
-
-class CalendarData {
-  Future<List<Meeting>> loadAppointmentsFromSupabase() async {
-    // final eventData = await supabase
-    //     .from('appointments')
-    //     .select('summary, description, start_time, end_time, vrecur, isallday, type, id');
-    print('making request for chunks.');
-    final chunkData = await supabase
-        .from('chunks')
-        .select('summary, start_time, end_time, id');
-    print('Parsing chunks.');
-    List<Meeting> chunks =
-        chunkData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
-    print('making request for events.');
-    final eventData = await supabase
-        .from('events')
-        .select('class_id, summary, description, start_time, end_time');
-    print('Parsing events.');
-
-    List<Map<String, dynamic>> transformedEventData = eventData.map<Map<String, dynamic>>((event) {
-      return {
-        'id': event['class_id'],  // Aliasing 'class_id' to 'id'
-        'summary': event['summary'],
-        'description': event['description'],
-        'start_time': event['start_time'],
-        'end_time': event['end_time'],
-      };
+  Stream<List<Map<String, dynamic>>> transformedEventStream =
+      eventStream.map((list) {
+    return list.map((event) {
+      event['id'] = event['class_id'];
+      return event;
     }).toList();
+  });
 
-    List<Meeting> events =
-        transformedEventData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
+  Stream<List<Meeting>> combinedStream = Rx.combineLatest2(
+    chunkStream,
+    transformedEventStream,
+    (List<Map<String, dynamic>> list1, List<Map<String, dynamic>> list2) {
+      // Combine the lists from each stream and convert each Map to a Meeting
+      return [...list1, ...list2]
+          .map((eventJson) => Meeting.fromJson(eventJson))
+          .toList();
+    },
+  );
 
-    final meetings = chunks + events;
+  // List<Map<String, dynamic>> transformedEventData = eventStream.map<Map<String, dynamic>>((event) {
+  //   return {
+  //     'id': event['class_id'],  // Aliasing 'class_id' to 'id'
+  //     'summary': event['summary'],
+  //     'description': event['description'],
+  //     'start_time': event['start_time'],
+  //     'end_time': event['end_time'],
+  //   };
+  // }).toList();
 
-    print('loading meeting objects worked');
-    // final meetings = events;
-    // final List<Meeting> appointments = [];
+  // List<Meeting> events =
+  //     transformedEventData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
 
-    // for (final appointmentData in response) {
-    //   String startDtStr = appointmentData['starttime'];
-    //   String endDtStr = appointmentData['endtime'];
-    //   DateTime startTime = DateTime.parse(startDtStr);
-    //   DateTime endTime = DateTime.parse(endDtStr);
-    //   String subject = appointmentData['title'] ?? '';
-    //   bool isAllDay = appointmentData['isallday'] ?? false;
-    //   String recurrenceRule = appointmentData['vrecur'] ?? '';
-    //   Color color = Colors.blue; // Assuming all appointments have the same color for simplicity
-
-    //   appointments.add(Meeting(
-    //     startTime: startTime,
-    //     endTime: endTime,
-    //     description: ,
-    //     isAllDay: isAllDay,
-    //   ));
-    // }
-    return meetings;
-  }
-
-  // Helper function to format the time zone offset as a string
-  // String _formatTimeZoneOffset(Duration offset) {
-  //   String sign = offset.isNegative ? "-" : "+";
-  //   int hours = offset.inHours.abs();
-  //   int minutes = (offset.inMinutes.abs() % 60);
-  //   return "$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}";
-  // }
-
-  // DateTime _supabaseToFlutterDateTime(String dateTimeStr) {
-  // // Replace the space with 'T' and remove the dot in the timezone offset
-  // String isoDateTimeStr = dateTimeStr.replaceAll(' ', 'Z').replaceAll('.00', ':00');
-
-  // // Now the string should be in a format that DateTime.parse can handle
-  // DateTime dateTime = DateTime.parse(isoDateTimeStr);
-
-  // return dateTime;
-
-  // }
+  // final meetings = chunks + events;
+  return combinedStream;
 }
-
-final calData = Provider(
-  (ref) => CalendarData(),
-);
-
-final calProvider = FutureProvider(
-  (ref) {
-    final cal = ref.read(calData);
-
-    return cal.loadAppointmentsFromSupabase();
-  },
-);

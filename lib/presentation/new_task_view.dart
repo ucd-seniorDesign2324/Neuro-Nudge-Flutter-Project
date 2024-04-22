@@ -4,6 +4,7 @@ import 'package:nn/methods/evt_type_dropdown.dart';
 // import 'package:nn/methods/recurrence_picker.dart';
 import 'package:nn/data/EventData.dart';
 import 'package:nn/data/process_new_event.dart';
+import 'package:nn/controller/meeting.dart';
 // import 'package:nn/methods/sub_task_dropdown.dart';
 
 // TODO:
@@ -11,7 +12,10 @@ import 'package:nn/data/process_new_event.dart';
 // Create methods for entering task data. I.e., task name, type, subtasks, etc
 // Implement callback methods for user interactions. I.e., onTouch()
 class NewTaskView extends StatelessWidget {
-  NewTaskView({super.key});
+
+  final Meeting? meeting;
+
+  NewTaskView({super.key, this.meeting});
 
   final GlobalKey<_TaskEditMenuState> _taskEditMenuKey = GlobalKey<_TaskEditMenuState>();
 
@@ -24,12 +28,14 @@ class NewTaskView extends StatelessWidget {
         backgroundColor: const Color(0xffF5F5F5),
         elevation: 5,
         actions: [
-          // IconButton(
-          //   //Do we need this, or is back button enough?
-          //   onPressed: () {
-
-          //   },
-          //   icon: const Icon(Icons.close)),
+          if (meeting != null) // Show the delete button only if editing an existing meeting
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _deleteMeeting(context),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
@@ -38,13 +44,41 @@ class NewTaskView extends StatelessWidget {
           ),
         ],
       ),
-      body: TaskEditMenu(key: _taskEditMenuKey),
+      body: TaskEditMenu(key: _taskEditMenuKey, meeting: meeting),
+    );
+  }
+
+    void _deleteMeeting(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: const Text('Are you sure you want to delete this task?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                // Delete API Event Call here
+              },
+              child: const Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
 class TaskEditMenu extends StatefulWidget {
-  const TaskEditMenu({Key? key}) : super(key: key);
+
+  final Meeting? meeting;
+
+  const TaskEditMenu({Key? key, this.meeting}) : super(key: key);
 
   @override
   State<TaskEditMenu> createState() => _TaskEditMenuState();
@@ -55,8 +89,8 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
   DateTime? _endDate;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
 
   Future<void> _pickDate(BuildContext context, {bool isStart = true}) async {
     final DateTime? picked = await showDatePicker(
@@ -92,6 +126,17 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
         }
       });
     }
+  }
+
+    @override
+  void initState() {
+    super.initState();
+    _startDate = widget.meeting?.startTime;
+    _endDate = widget.meeting?.endTime;
+    _startTime = widget.meeting != null ? TimeOfDay(hour: widget.meeting!.startTime.hour, minute: widget.meeting!.startTime.minute) : null;
+    _endTime = widget.meeting != null ? TimeOfDay(hour: widget.meeting!.endTime.hour, minute: widget.meeting!.endTime.minute) : null;
+    _titleController = TextEditingController(text: widget.meeting?.subject ?? '');
+    _descriptionController = TextEditingController(text: widget.meeting?.notes ?? '');
   }
 
   void onSavePressed() {

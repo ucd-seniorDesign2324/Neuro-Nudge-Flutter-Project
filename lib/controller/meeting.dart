@@ -10,8 +10,12 @@
   and overrides methods to provide necessary information about the meetings.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:nn/main.dart';
 
 class Meeting extends Appointment {
   int dbID;
@@ -46,6 +50,18 @@ class Meeting extends Appointment {
       dbID: json['id'] as int,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'summary': subject,
+        'description': notes,
+        'start_time': startTime.toIso8601String(),
+        'end_time': endTime.toIso8601String(),
+        'isAllDay' : isAllDay,
+        'recurrence' : recurrenceRule, 
+        'id' : dbID
+        // 'eventType': eventType,
+      };
+
 }
 
 // Data Source
