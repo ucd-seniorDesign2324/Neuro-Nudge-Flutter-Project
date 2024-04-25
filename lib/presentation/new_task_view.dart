@@ -59,6 +59,7 @@ class NewTaskView extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
+
                 // Delete API Event Call here
               },
               child: const Text('Delete'),
@@ -91,6 +92,8 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
   TimeOfDay? _endTime;
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
+  String? _eventType;
+  String? _recurrence;
 
   Future<void> _pickDate(BuildContext context, {bool isStart = true}) async {
     final DateTime? picked = await showDatePicker(
@@ -165,6 +168,8 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
         _endTime!.minute,
       );
     // }
+
+    // 3. Create a Meeting object
 
     // 3. Create an EventData object
     EventData eventData = EventData(
