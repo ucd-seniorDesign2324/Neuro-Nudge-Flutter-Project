@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nn/methods/evt_type_dropdown.dart';
-// import 'package:nn/methods/alarm_dropdown.dart';
-// import 'package:nn/methods/recurrence_picker.dart';
+import 'package:nn/methods/alarm_dropdown.dart';
+import 'package:nn/methods/recurrence_picker.dart';
 import 'package:nn/data/EventData.dart';
 import 'package:nn/data/process_new_event.dart';
 import 'package:nn/controller/meeting.dart';
@@ -240,14 +240,14 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
             padding: EdgeInsets.all(8.0),
             child: EventTypeDropdown(),
           ),
-          // const Padding(
-          //   padding: EdgeInsets.all(8.0),
-          //   child: AlarmDropdown(),
-          // ),
-          // const Padding(
-          //   padding: EdgeInsets.all(16.0),
-          //   child: RecurrencePicker(),
-          // ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: AlarmDropdown(),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: RecurrencePicker(),
+          ),
         ],
       ),
     ));

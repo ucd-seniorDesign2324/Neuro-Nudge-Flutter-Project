@@ -23,8 +23,6 @@ import 'package:nn/methods/app_bar.dart';
 import 'package:nn/presentation/new_task_view.dart';
 import 'package:nn/presentation/smart_add_page.dart';
 
-final calendarViewControllerProvider = StateProvider<CalendarView>((ref) => CalendarView.schedule);
-
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -61,20 +59,20 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget loadICSButton() {
-  return FloatingActionButton(
-    onPressed: () async {
-      await loadICSRequest();
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    },
-    heroTag: "loadICS",
-    tooltip: 'Load ICS File',
-    child: Icon(Icons.file_upload),
-  );
-}
+  // Widget loadICSButton() {
+  // return FloatingActionButton(
+  //   onPressed: () async {
+  //     await loadICSRequest();
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => HomePage()),
+  //     );
+  //   },
+  //   heroTag: "loadICS",
+  //   tooltip: 'Load ICS File',
+  //   child: Icon(Icons.file_upload),
+  // );
+// }
 
   final Stream<List<Meeting>> meetingStream = streamMeetings();
 
@@ -85,7 +83,7 @@ class HomePage extends ConsumerWidget {
       drawer: const DrawerMenu(),
       body: CalWidget(meetingStream: meetingStream,),
       floatingActionButton: AnimatedFloatingActionButton(
-        fabButtons: <Widget>[loadICSButton(), formAddButton(), smartAddButton(),],
+        fabButtons: <Widget>[formAddButton(), smartAddButton(),],
         key: key,
         colorStartAnimation: Colors.blue,
         colorEndAnimation: Colors.red,
@@ -103,20 +101,12 @@ class CalWidget extends ConsumerWidget {
     super.key, required this.meetingStream
   });
 
-
-
-  // final calInfo = ref.watch(calProvider);
-
-  // // View changing
-  // final view = ref.watch(viewProvider.select((value) => value));
-  // calController.view = view;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // return calInfo.when(
-    //   data: (item) =>
-    final CalendarController calendarController = CalendarController();
-    final calendarView = ref.watch(calendarViewControllerProvider);
+
+    final CalendarController calController = CalendarController();
+    final view = ref.watch(viewProvider.select((value) => value));
+    calController.view = view;
     return StreamBuilder<List<Meeting>>(
       stream: meetingStream,
       builder: (context, snapshot) {
@@ -131,8 +121,8 @@ class CalWidget extends ConsumerWidget {
           MeetingDataSource dataSource = MeetingDataSource(snapshot.data!);
 
         return SfCalendar(
-          view: calendarView,
-          controller: calendarController,
+          view: view,
+          controller: calController,
           timeZone : 'Mountain Standard Time',
           dataSource: dataSource,
           headerStyle: const CalendarHeaderStyle(

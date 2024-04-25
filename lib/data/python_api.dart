@@ -13,6 +13,7 @@ Future<List<Meeting>> fetchEvents(http.Client http) async {
   return meetings;
 }
 
+// Send API request to "load" a given ics file into the database
 Future<void> loadICSRequest() async {
     try {
     print("sending http request");
@@ -27,19 +28,3 @@ Future<void> loadICSRequest() async {
   }
 
 } 
-
-// Get request for "importing" ICS file
-Future<http.Response> importEvents() async {
-
-    try{
-      final response = await http.get(Uri.parse('https://10.0.2.2:8000/load-ics'));
-      if(response.statusCode == 200){
-        return response;
-      }
-      else{
-        throw Exception('Failed Get request. Status code ${response.statusCode}');
-      }
-    } catch(e){
-      throw Exception("Error Fetching Data: $e");
-    }
-}
