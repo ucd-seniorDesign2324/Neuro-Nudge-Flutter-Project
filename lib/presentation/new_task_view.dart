@@ -5,6 +5,7 @@ import 'package:nn/methods/recurrence_picker.dart';
 import 'package:nn/data/EventData.dart';
 import 'package:nn/data/process_new_event.dart';
 import 'package:nn/controller/meeting.dart';
+import 'package:nn/data/python_api.dart';
 // import 'package:nn/methods/sub_task_dropdown.dart';
 
 // TODO:
@@ -57,9 +58,9 @@ class NewTaskView extends StatelessWidget {
           content: const Text('Are you sure you want to delete this task?'),
           actions: <Widget>[
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop(); // Close the dialog
-
+                await deleteMeeting(meeting);
                 // Delete API Event Call here
               },
               child: const Text('Delete'),
@@ -140,6 +141,7 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
     _endTime = widget.meeting != null ? TimeOfDay(hour: widget.meeting!.endTime.hour, minute: widget.meeting!.endTime.minute) : null;
     _titleController = TextEditingController(text: widget.meeting?.subject ?? '');
     _descriptionController = TextEditingController(text: widget.meeting?.notes ?? '');
+    _eventType = widget.meeting?.eventType;
   }
 
   void onSavePressed() {
@@ -170,18 +172,25 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
     // }
 
     // 3. Create a Meeting object
-
-    // 3. Create an EventData object
-    EventData eventData = EventData(
-      title: title,
-      description: description,
-      startDateTime: startDT,
-      endDateTime: endDT,
-      eventType: 'Exam'
+    Meeting meeting = Meeting(
+      subject : title,
+      notes : description,
+      startTime: startDT,
+      endTime: endDT,
+      eventType: _eventType ?? ''
     );
 
+    // 3. Create an EventData object
+    // EventData eventData = EventData(
+    //   title: title,
+    //   description: description,
+    //   startDateTime: startDT,
+    //   endDateTime: endDT,
+    //   eventType: 'Exam'
+    // );
+
     // 4. Process the new event
-    processNewEvent(eventData);
+    newMeeting(meeting);
   }
 
   @override
@@ -241,18 +250,25 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
               },
             ),
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(8.0),
-            child: EventTypeDropdown(),
+            child: EventTypeDropdown(
+              initialValue: _eventType,
+              onChanged: (value) {
+                setState(() {
+                  _eventType = value;
+                });
+              }
+            ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: AlarmDropdown(),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: RecurrencePicker(),
-          ),
+          // const Padding(
+          //   padding: EdgeInsets.all(8.0),
+          //   child: AlarmDropdown(),
+          // ),
+          // const Padding(
+          //   padding: EdgeInsets.all(16.0),
+          //   child: RecurrencePicker(),
+          // ),
         ],
       ),
     ));
