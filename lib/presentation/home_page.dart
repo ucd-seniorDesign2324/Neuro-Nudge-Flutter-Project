@@ -146,12 +146,14 @@ class CalWidget extends ConsumerWidget {
           onTap: (CalendarTapDetails details) {
           if (details.appointments != null &&
               details.targetElement == CalendarElement.appointment) {
-            final Meeting meeting = details.appointments!.first;
+            final Appointment appointment = details.appointments!.first;
+            if (appointment is Meeting) {
+            final Meeting meeting = appointment;
             Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => NewTaskView(meeting: meeting)),
-            );
+            );}
           }
         },
         );

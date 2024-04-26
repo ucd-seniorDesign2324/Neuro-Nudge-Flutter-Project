@@ -46,7 +46,7 @@ class Meeting extends Appointment {
       notes: json['description'] as String? ?? "",
       startTime: DateTime.parse(json['start_time'] as String),
       endTime: DateTime.parse(json['end_time'] as String),
-      recurrenceRule: json['recurrence'] as String? ?? "null",
+      recurrenceRule: json['recurrence'] as String? ?? "",
       isAllDay: json['isallday'] as bool? ?? false,
       dbID: json['id'] as int,
       eventType: json['eventType'] as String? ?? ""
@@ -59,7 +59,7 @@ class Meeting extends Appointment {
         'start_time': startTime.toIso8601String(),
         'end_time': endTime.toIso8601String(),
         'isAllDay' : isAllDay,
-        'recurrence' : recurrenceRule, 
+        'recurrence' : recurrenceRule == "" ? "null" : recurrenceRule, 
         'id' : dbID,
         'eventType': eventType,
       };
