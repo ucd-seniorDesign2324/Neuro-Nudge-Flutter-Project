@@ -8,7 +8,7 @@
 
 import 'package:flutter/material.dart';
 
-const List<String> list = <String>['Exam','HW', 'Quiz', 'Midterm', 'Lab', 'Final',  'Project', 'Study'];
+const List<String> list = <String>['hw', 'quiz', 'midterm', 'lab', 'final', 'project', 'study'];
 
 class EventTypeDropdown extends StatefulWidget {
   final String? initialValue;

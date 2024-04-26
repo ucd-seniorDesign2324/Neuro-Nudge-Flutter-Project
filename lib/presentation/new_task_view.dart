@@ -6,6 +6,7 @@ import 'package:nn/data/EventData.dart';
 import 'package:nn/data/process_new_event.dart';
 import 'package:nn/controller/meeting.dart';
 import 'package:nn/data/python_api.dart';
+import 'package:nn/presentation/home_page.dart';
 // import 'package:nn/methods/sub_task_dropdown.dart';
 
 // TODO:
@@ -40,7 +41,13 @@ class NewTaskView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
-              onPressed: () => _taskEditMenuKey.currentState?.onSavePressed(), 
+              onPressed: () { 
+                _taskEditMenuKey.currentState?.onSavePressed();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+              },
               icon: const Icon(Icons.save)),
           ),
         ],
@@ -190,6 +197,7 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
     // );
 
     // 4. Process the new event
+    print('sending the event');
     newMeeting(meeting);
   }
 

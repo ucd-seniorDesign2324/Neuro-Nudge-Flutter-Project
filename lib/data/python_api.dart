@@ -17,7 +17,7 @@ Future<List<Meeting>> fetchEvents(http.Client http) async {
 Future<void> loadICSRequest() async {
     try {
     // print("sending http request");
-    final response = await http.get(Uri.parse('https://10.0.2.2:8000/load-ics'));
+    final response = await http.get(Uri.parse('http://10.0.2.2:8000/load-ics'));
       if (response.statusCode == 200) {
         print(response);
     } else {
@@ -30,7 +30,9 @@ Future<void> loadICSRequest() async {
 }
 
 Future<void> newMeeting(Meeting meeting) async {
-  var url = Uri.parse('https://10.0.2.2:8000/new-meeting');
+  var url = Uri.parse('http://10.0.2.2:5080/process-new-event');
+  print("Entering send call");
+  print(meeting.toJson());
   try {
     var response = await http.post(
       url,
