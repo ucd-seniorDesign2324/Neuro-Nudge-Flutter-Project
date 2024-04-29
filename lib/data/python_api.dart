@@ -51,7 +51,7 @@ Future<void> newMeeting(Meeting meeting) async {
 }
 
 Future<void> deleteMeeting(Meeting? meeting) async {
-  var url = Uri.parse('https://10.0.2.2:8000/delete-meeting');
+  var url = Uri.parse('http://10.0.2.2:8000/delete-meeting');
   try {
     var response = await http.delete(
       url,
@@ -70,7 +70,7 @@ Future<void> deleteMeeting(Meeting? meeting) async {
 }
 
 Future<void> updateMeeting(Meeting meeting) async {
-  var url = Uri.parse('https://10.0.2.2:8000/update-meeting');
+  var url = Uri.parse('http://10.0.2.2:8000/update-meeting');
   try {
     var response = await http.put(
       url,

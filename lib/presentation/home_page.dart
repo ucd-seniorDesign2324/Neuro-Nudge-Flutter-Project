@@ -184,6 +184,7 @@ Stream<List<Meeting>> streamMeetings() {
       eventStream.map((list) {
     return list.map((event) {
       event['id'] = event['class_id'];
+      event['color'] = Colors.blue;
       return event;
     }).toList();
   });

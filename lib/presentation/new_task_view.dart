@@ -184,7 +184,8 @@ class _TaskEditMenuState extends State<TaskEditMenu> {
       notes : description,
       startTime: startDT,
       endTime: endDT,
-      eventType: _eventType ?? ''
+      eventType: _eventType ?? '',
+      color: Colors.blue
     );
 
     // 3. Create an EventData object

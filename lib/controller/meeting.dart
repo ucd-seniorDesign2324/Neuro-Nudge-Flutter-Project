@@ -30,7 +30,8 @@ class Meeting extends Appointment {
     notes = "",
     isAllDay = false,
     this.eventType = '',
-    this.dbID = 0
+    this.dbID = 0,
+    color
   }) : super(
           subject: subject,
           startTime: startTime,
@@ -38,6 +39,7 @@ class Meeting extends Appointment {
           notes: notes,
           recurrenceRule: recurrenceRule,
           isAllDay: isAllDay,
+          color: color
       );
 
   factory Meeting.fromJson(Map<String, dynamic> json) {
@@ -49,7 +51,8 @@ class Meeting extends Appointment {
       recurrenceRule: json['recurrence'] as String? ?? "",
       isAllDay: json['isallday'] as bool? ?? false,
       dbID: json['id'] as int,
-      eventType: json['eventType'] as String? ?? ""
+      eventType: json['eventType'] as String? ?? "",
+      color: json['color'] as Color? ?? Colors.green
     );
   }
 
