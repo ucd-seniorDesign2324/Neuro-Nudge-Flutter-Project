@@ -133,9 +133,10 @@ class CalWidget extends ConsumerWidget {
             appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
           ),
 
-          timeSlotViewSettings: const TimeSlotViewSettings( 
+          timeSlotViewSettings: TimeSlotViewSettings( 
             numberOfDaysInView: 1,
             timeIntervalHeight: 100,
+            timeTextStyle: Theme.of(context).textTheme.bodyMedium
           ),
 
           scheduleViewSettings: const ScheduleViewSettings(
