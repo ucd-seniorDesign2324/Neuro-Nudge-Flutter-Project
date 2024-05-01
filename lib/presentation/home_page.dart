@@ -134,7 +134,8 @@ class CalWidget extends ConsumerWidget {
           ),
 
           timeSlotViewSettings: const TimeSlotViewSettings( 
-            numberOfDaysInView: 1
+            numberOfDaysInView: 1,
+            timeIntervalHeight: 100,
           ),
 
           scheduleViewSettings: const ScheduleViewSettings(
@@ -167,30 +168,39 @@ class CalWidget extends ConsumerWidget {
   }
 }
 
+// Convert color string to hex value
+Color parseColor(String colorString){
+  String hex = colorString.replaceAll("#", "");
+  int value = int.parse(hex, radix: 16);
+  return Color(value).withAlpha(255);
+}
 
 Stream<List<Meeting>> streamMeetings() {
+
   final chunkStream = supabase.from('chunks').stream(primaryKey: ['id']);
 
-  // List<Meeting> chunks =
-  //     chunkData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
-
-  // final eventData = await supabase
-  //     .from('events')
-  //     .select('class_id, summary, description, start_time, end_time');
+   Stream<List<Map<String, dynamic>>> transformedChunkStream =
+      chunkStream.map((list) {
+    return list.map((chunk) {
+      chunk['summary'] = chunk['display_name'];
+      chunk['color'] = parseColor(chunk['color']);
+      return chunk;
+    }).toList();
+  });
 
   final eventStream = supabase.from('events').stream(primaryKey: ['class_id']);
 
   Stream<List<Map<String, dynamic>>> transformedEventStream =
       eventStream.map((list) {
-    return list.map((event) {
+    return list.where((event) => event['summary'] != 'Sleep').map((event) {
       event['id'] = event['class_id'];
-      event['color'] = Colors.blue;
+      event['color'] = parseColor(event['color']); 
       return event;
     }).toList();
   });
 
   Stream<List<Meeting>> combinedStream = Rx.combineLatest2(
-    chunkStream,
+    transformedChunkStream,
     transformedEventStream,
     (List<Map<String, dynamic>> list1, List<Map<String, dynamic>> list2) {
       // Combine the lists from each stream and convert each Map to a Meeting
@@ -199,6 +209,7 @@ Stream<List<Meeting>> streamMeetings() {
           .toList();
     },
   );
+
 
   // List<Map<String, dynamic>> transformedEventData = eventStream.map<Map<String, dynamic>>((event) {
   //   return {
