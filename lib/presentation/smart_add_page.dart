@@ -16,7 +16,8 @@ class _SmartAddPageState extends State<SmartAddPage> {
   final TextEditingController _controller = TextEditingController();
 
 Future<void> _sendForParsing() async {
-    final url = Uri.parse('http://10.0.2.2:5080/smart-add-process');
+    // final url = Uri.parse('http://10.26.236.235:8000/smart-add-process');
+    final url = Uri.parse('http://10.26.236.235:8000/smart-add-process');
     final text = _controller.text + "Current Date: " + DateTime.now().toIso8601String();
     try {
       final response = await http.post(url,

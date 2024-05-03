@@ -44,7 +44,7 @@ class Meeting extends Appointment {
 
   factory Meeting.fromJson(Map<String, dynamic> json) {
     return Meeting(
-      subject: json['summary'] as String,
+      subject: json['display_name'] as String,
       notes: json['description'] as String? ?? "",
       startTime: DateTime.parse(json['start_time'] as String),
       endTime: DateTime.parse(json['end_time'] as String),
