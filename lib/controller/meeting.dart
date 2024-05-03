@@ -44,7 +44,7 @@ class Meeting extends Appointment {
 
   factory Meeting.fromJson(Map<String, dynamic> json) {
     return Meeting(
-      subject: json['summary'] as String,
+      subject: json['summary'] as String? ?? "Default subject",
       notes: json['description'] as String? ?? "",
       startTime: DateTime.parse(json['start_time'] as String),
       endTime: DateTime.parse(json['end_time'] as String),
@@ -52,7 +52,7 @@ class Meeting extends Appointment {
       isAllDay: json['isallday'] as bool? ?? false,
       dbID: json['id'] as int,
       eventType: json['eventType'] as String? ?? "",
-      color: json['color'] as Color? ?? Colors.green
+      color: parseColor(json['color'] as String? ?? "#2196F3") as Color? ?? Color.fromARGB(255, 76, 175, 80)
     );
   }
 
@@ -67,6 +67,12 @@ class Meeting extends Appointment {
         'eventType': eventType,
       };
 
+}
+
+Color parseColor(String colorString) {
+  String hex = colorString.replaceAll("#", "");
+  int value = int.parse(hex, radix: 16);
+  return Color(value).withAlpha(255);
 }
 
 // Data Source

@@ -170,11 +170,11 @@ class CalWidget extends ConsumerWidget {
 }
 
 // Convert color string to hex value
-Color parseColor(String colorString){
-  String hex = colorString.replaceAll("#", "");
-  int value = int.parse(hex, radix: 16);
-  return Color(value).withAlpha(255);
-}
+// Color parseColor(String colorString){
+//   String hex = colorString.replaceAll("#", "");
+//   int value = int.parse(hex, radix: 16);
+//   return Color(value).withAlpha(255);
+// }
 
 Stream<List<Meeting>> streamMeetings() {
 
@@ -184,7 +184,7 @@ Stream<List<Meeting>> streamMeetings() {
       chunkStream.map((list) {
     return list.map((chunk) {
       chunk['summary'] = chunk['display_name'];
-      chunk['color'] = parseColor(chunk['color']);
+      // chunk['color'] = parseColor(chunk['color']);
       return chunk;
     }).toList();
   });
@@ -195,7 +195,8 @@ Stream<List<Meeting>> streamMeetings() {
       eventStream.map((list) {
     return list.where((event) => event['summary'] != 'Sleep').map((event) {
       event['id'] = event['class_id'];
-      event['color'] = parseColor(event['color']); 
+      //event['color'] = parseColor(event['color']);
+      event['summary'] = event['summary'] + ': ' + event['description']; 
       return event;
     }).toList();
   });

@@ -17,7 +17,7 @@ class _SmartAddPageState extends State<SmartAddPage> {
 
 Future<void> _sendForParsing() async {
     final url = Uri.parse('http://10.0.2.2:5080/smart-add-process');
-    final text = _controller.text + "Current Date: " + DateTime.now().toIso8601String();
+    final text = _controller.text + "Current Date: " + DateTime.now().toString();
     try {
       final response = await http.post(url,
           headers: {'Content-Type': 'application/json'},
