@@ -52,7 +52,7 @@ class Meeting extends Appointment {
       isAllDay: json['isallday'] as bool? ?? false,
       dbID: json['id'] as int,
       eventType: json['eventType'] as String? ?? "",
-      color: json['color'] as Color? ?? Colors.green
+      color: hexToColor(json['color']) as Color? ?? Colors.green
     );
   }
 
@@ -67,6 +67,14 @@ class Meeting extends Appointment {
         'eventType': eventType,
       };
 
+}
+
+Color hexToColor(String hexString) {
+  hexString = hexString.toUpperCase().replaceAll("#", "");
+  if (hexString.length == 3) {
+    hexString = hexString.split('').map((c) => c + c).join('');
+  }
+  return Color(int.parse(hexString, radix: 16) + 0xFF000000);
 }
 
 // Data Source
