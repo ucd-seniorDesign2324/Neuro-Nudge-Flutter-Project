@@ -52,7 +52,7 @@ class Meeting extends Appointment {
       isAllDay: json['isallday'] as bool? ?? false,
       dbID: json['id'] as int,
       eventType: json['eventType'] as String? ?? "",
-      color: hexToColor(json['color']) as Color? ?? Colors.green
+      color: json['color'] as Color? ?? Colors.green
     );
   }
 
