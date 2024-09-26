@@ -15,7 +15,7 @@ Future<void> processNewEvent(EventData eventData) async {
   String jsonBody = json.encode(eventData.toJson());
 
   // String apiUrl = 'http://10.26.236.235:8000/process-new-event';
-  String apiUrl = 'http://10.26.236.235:8000/process-new-event';
+  String apiUrl = 'http://10.0.2.2:8000/process-new-event';
 
   try {
     // Send a POST request with the JSON-encoded data

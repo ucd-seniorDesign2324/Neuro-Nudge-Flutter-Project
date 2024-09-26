@@ -108,7 +108,7 @@ class MeetingDataSource extends CalendarDataSource {
     return getAppointments(index).isAllDay;
   }
 
-  @override
+  // @override
   String? getRecRule(int index){
     return getAppointments(index).recurrenceRule;
   }

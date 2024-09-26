@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_config/flutter_config.dart';
+
+
+
+
+
+
 import 'package:nn/presentation/new_task_view.dart';
 import 'package:nn/controller/meeting.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +22,7 @@ class _SmartAddPageState extends State<SmartAddPage> {
 
 Future<void> _sendForParsing() async {
     // final url = Uri.parse('http://10.26.236.235:8000/smart-add-process');
-    final url = Uri.parse('http://10.26.236.235:8000/smart-add-process');
+    final url = Uri.parse('http://10.0.2.2:8000/smart-add-process');
     final text = _controller.text + "Current Date: " + DateTime.now().toIso8601String();
     try {
       final response = await http.post(url,

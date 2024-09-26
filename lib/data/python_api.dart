@@ -17,9 +17,9 @@ Future<List<Meeting>> fetchEvents(http.Client http) async {
 Future<void> loadICSRequest() async {
     try {
     // print("sending http request");
-    final response = await http.get(Uri.parse('http://10.26.236.235:8000/load-ics'));
+    final response = await http.get(Uri.parse('http://10.0.2.2:8000/load-ics'));
       if (response.statusCode == 200) {
-        print(response);
+        // print(response);
     } else {
       throw Exception('Failed Get request. Status code ${response.statusCode}');
     }
@@ -30,7 +30,7 @@ Future<void> loadICSRequest() async {
 }
 
 Future<void> newMeeting(Meeting meeting) async {
-  var url = Uri.parse('http://10.26.236.235:8000/process-new-event');
+  var url = Uri.parse('http://10.0.2.2:8000/process-new-event');
   print("Entering send call");
   print(meeting.toJson());
   try {
@@ -51,7 +51,7 @@ Future<void> newMeeting(Meeting meeting) async {
 }
 
 Future<void> deleteMeeting(Meeting? meeting) async {
-  var url = Uri.parse('http://10.26.236.235:8000/delete-meeting');
+  var url = Uri.parse('http://10.0.2.2:8000/delete-meeting');
   try {
     var response = await http.delete(
       url,
@@ -70,7 +70,7 @@ Future<void> deleteMeeting(Meeting? meeting) async {
 }
 
 Future<void> updateMeeting(Meeting meeting) async {
-  var url = Uri.parse('http://10.26.236.235:8000/update-meeting');
+  var url = Uri.parse('http://10.0.2.2:8000/update-meeting');
   try {
     var response = await http.put(
       url,

@@ -6,7 +6,6 @@
  */
 
 import 'package:flutter/material.dart';
-// import 'package:flutter_config/flutter_config.dart';
 import 'package:nn/presentation/home_page.dart';
 import 'package:nn/presentation/theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,7 +15,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
-  // await FlutterConfig.loadEnvVariables();
   Supabase.initialize(
     url: 'https://fgocfoakntmlhgtftrzh.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnb2Nmb2FrbnRtbGhndGZ0cnpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTE2ODkyMTUsImV4cCI6MjAyNzI2NTIxNX0.s5dAWy-DSa1EBfKjhpGOOcax6S7QUsh7xCHPFgKlBn8',
@@ -38,13 +36,6 @@ void main() async {
 }
 
 final supabase = Supabase.instance.client; // Supabase client instance
-
-// // Listen to inserts
-// supabase.channel('public:chunks').onPostgresChanges(
-//         event: PostgresChangeEvent.insert,
-//         schema: 'public',
-//         table: 'chunks',
-//         callback: handleInserts).subscribe();
 
 // Main application widget
 class MyApp extends StatelessWidget {

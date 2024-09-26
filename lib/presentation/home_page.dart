@@ -28,7 +28,7 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-  final FloatingSearchBarController controller = FloatingSearchBarController();
+  // final FloatingSearchBarController controller = FloatingSearchBarController();
   final GlobalKey<AnimatedFloatingActionButtonState> key = GlobalKey();
 
   Widget smartAddButton() {
@@ -107,6 +107,7 @@ class CalWidget extends ConsumerWidget {
     final CalendarController calController = CalendarController();
     final view = ref.watch(viewProvider.select((value) => value));
     calController.view = view;
+
     return StreamBuilder<List<Meeting>>(
       stream: meetingStream,
       builder: (context, snapshot) {
@@ -114,7 +115,7 @@ class CalWidget extends ConsumerWidget {
           return Text('Error: ${snapshot.error}');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasData) {
           // Use a custom data source with the list of meetings
@@ -145,6 +146,7 @@ class CalWidget extends ConsumerWidget {
               fontSize: 20,
             ),
           ),
+
           onTap: (CalendarTapDetails details) {
           if (details.appointments != null &&
               details.targetElement == CalendarElement.appointment) {
@@ -195,7 +197,7 @@ Stream<List<Meeting>> streamMeetings() {
       eventStream.map((list) {
     return list.where((event) => event['summary'] != 'Sleep').map((event) {
       event['id'] = event['class_id'];
-      event['color'] = parseColor(event['color']); 
+      event['color'] = parseColor(event['color']);
       return event;
     }).toList();
   });
