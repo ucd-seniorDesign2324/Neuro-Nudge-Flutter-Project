@@ -16,7 +16,7 @@ final ThemeData appThemeData = ThemeData(
       fontWeight: FontWeight.bold,
     ),
     bodyMedium: GoogleFonts.poppins(
-      fontSize: 20,
+      fontSize: 15,
       fontWeight: FontWeight.bold
     ),
     bodyLarge: GoogleFonts.poppins(

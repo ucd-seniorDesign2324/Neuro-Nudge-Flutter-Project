@@ -10,92 +10,71 @@
   and overrides methods to provide necessary information about the meetings.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:nn/main.dart';
 
-class Meeting {
-  String title;
-  DateTime startTime;
-  DateTime endTime;
-  String description;
-  String recRule;
-  bool isAllDay;
+class Meeting extends Appointment {
+  int dbID;
+  String eventType;
 
   // Constructor
   Meeting({
-    required this.title,
-    required this.startTime,
-    required this.endTime,
-    this.description = "",
-    this.recRule = "",
-    this.isAllDay = false,
-  });
+    required subject,
+    required startTime,
+    required endTime,
+    recurrenceRule = "null",
+    notes = "",
+    isAllDay = false,
+    this.eventType = '',
+    this.dbID = 0,
+    color
+  }) : super(
+          subject: subject,
+          startTime: startTime,
+          endTime: endTime,
+          notes: notes,
+          recurrenceRule: recurrenceRule,
+          isAllDay: isAllDay,
+          color: color
+      );
 
   factory Meeting.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'summary':     String title,
-        'description': String description,
-        'startTime':   String startTime,
-        'endTime':     String endTime,
-        'vrecur':      String recRule,
-        'isAllDay':    bool isAllDay,
-      } =>
-        Meeting(
-          title: title,
-          description: description,
-          startTime: DateTime.parse(startTime),
-          endTime: DateTime.parse(endTime),
-          recRule: recRule,
-          isAllDay: isAllDay,
-        ),
-      _ => throw Exception('Failed to load meeting object')
-    };
-  }
-  // Getter and setter methods
-  String getTitle() {
-    return title;
+    return Meeting(
+      subject: json['display_name'] as String,
+      notes: json['description'] as String? ?? "",
+      startTime: DateTime.parse(json['start_time'] as String),
+      endTime: DateTime.parse(json['end_time'] as String),
+      recurrenceRule: json['recurrence'] as String? ?? "",
+      isAllDay: json['isallday'] as bool? ?? false,
+      dbID: json['id'] as int,
+      eventType: json['eventType'] as String? ?? "",
+      color: json['color'] as Color? ?? Colors.green
+    );
   }
 
-  void setTitle(String title) {
-    this.title = title;
+  Map<String, dynamic> toJson() => {
+        'summary': subject,
+        'description': notes,
+        'start_time': startTime.toIso8601String(),
+        'end_time': endTime.toIso8601String(),
+        'isAllDay' : isAllDay,
+        'recurrence' : recurrenceRule == "" ? "null" : recurrenceRule, 
+        'id' : dbID,
+        'eventType': eventType,
+      };
+
+}
+
+Color hexToColor(String hexString) {
+  hexString = hexString.toUpperCase().replaceAll("#", "");
+  if (hexString.length == 3) {
+    hexString = hexString.split('').map((c) => c + c).join('');
   }
-
-  // String getLocation() {
-  //   return location;
-  // }
-
-  // void setLocation(String location) {
-  //   this.location = location;
-  // }
-
-  DateTime getStartTime() {
-    return startTime;
-  }
-
-  void setStartTime(DateTime startTime) {
-    this.startTime = startTime;
-  }
-
-  DateTime getEndTime() {
-    return endTime;
-  }
-
-  void setEndTime(DateTime endTime) {
-    this.endTime = endTime;
-  }
-
-  String getDescription() {
-    return description;
-  }
-
-  void setDescription(String description) {
-    this.description = description;
-  }
-
-   String getRecRule(int index){
-    return recRule;
-  }
+  return Color(int.parse(hexString, radix: 16) + 0xFF000000);
 }
 
 // Data Source
@@ -106,31 +85,39 @@ class MeetingDataSource extends CalendarDataSource {
 
   @override
   DateTime getStartTime(int index) {
-    return appointments![index].from;
+    return getAppointments(index).startTime;
   }
 
   @override
   DateTime getEndTime(int index) {
-    return appointments![index].to;
+    return getAppointments(index).endTime;
   }
 
   @override
   String getSubject(int index) {
-    return appointments![index].eventName;
+    return getAppointments(index).subject;
   }
 
   @override
   Color getColor(int index) {
-    return appointments![index].background;
+    return getAppointments(index).color;
   }
 
   @override
   bool isAllDay(int index) {
-    return appointments![index].isAllDay;
+    return getAppointments(index).isAllDay;
   }
 
-  @override
-  String getRecRule(int index){
-    return appointments![index].recRule;
+  // @override
+  String? getRecRule(int index){
+    return getAppointments(index).recurrenceRule;
+  }
+
+  int getDbID(int index) {
+    return getAppointments(index).dbID;
+  }
+
+  Meeting getAppointments(int index) {
+    return appointments![index] as Meeting;
   }
 }

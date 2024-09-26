@@ -6,94 +6,126 @@
   The appointments are then displayed in the calendar using the AppointmentDataSource class.
  */
 
-
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
+import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:nn/main.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:rxdart/rxdart.dart';
 import 'package:nn/data/python_api.dart';
 import 'package:nn/controller/meeting.dart';
 import 'package:nn/methods/drawer_menu.dart';
 import 'package:nn/methods/app_bar.dart';
 import 'package:nn/presentation/new_task_view.dart';
+import 'package:nn/presentation/smart_add_page.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+  // final FloatingSearchBarController controller = FloatingSearchBarController();
+  final GlobalKey<AnimatedFloatingActionButtonState> key = GlobalKey();
 
-class _HomePageState extends State<HomePage> {
-  final FloatingSearchBarController controller = FloatingSearchBarController();
+  Widget smartAddButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SmartAddPage()),
+        );
+      },
+      heroTag: "smartAdd",
+      tooltip: 'Smart Add',
+      child: Icon(Icons.smart_button),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    const String appTitle = 'NeuroNudge';
+  Widget formAddButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NewTaskView()),
+        );
+      },
+      heroTag: "formAdd",
+      tooltip: 'Form Add',
+      child: Icon(Icons.format_list_bulleted),
+    );
+  }
+
+  // Widget loadICSButton() {
+  // return FloatingActionButton(
+  //   onPressed: () async {
+  //     await loadICSRequest();
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => HomePage()),
+  //     );
+  //   },
+  //   heroTag: "loadICS",
+  //   tooltip: 'Load ICS File',
+  //   child: Icon(Icons.file_upload),
+  // );
+// }
+
+  final Stream<List<Meeting>> meetingStream = streamMeetings();
+
+
+  const String appTitle = 'NeuroNudge';
     return Scaffold(
       appBar: appBarBuilder(context, appTitle),
       drawer: const DrawerMenu(),
-      body: const CalWidget(),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewTaskView()),
-          );
-        },
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 45,
-        ),
+      body: CalWidget(meetingStream: meetingStream,),
+      floatingActionButton: AnimatedFloatingActionButton(
+        fabButtons: <Widget>[formAddButton(), smartAddButton(),],
+        key: key,
+        colorStartAnimation: Colors.blue,
+        colorEndAnimation: Colors.red,
+        animatedIconData: AnimatedIcons.menu_close,
       ),
     );
   }
 }
 
-class CalWidget extends ConsumerStatefulWidget {
+class CalWidget extends ConsumerWidget {
+
+  final Stream<List<Meeting>> meetingStream;
+
   const CalWidget({
-    super.key,
+    super.key, required this.meetingStream
   });
-  @override
-  ConsumerState<CalWidget> createState() => _CalWidgetState();
-
-}
-
-class _CalWidgetState extends ConsumerState<CalWidget>{
-  
-  late List<Meeting> appointments = [];
-  CalendarController calController = CalendarController();
 
   @override
-  void initState() {
-    super.initState();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
 
-  // TODO: Perhaps use FutureBuilder widget for calendar data?
-  @override
-  Widget build(BuildContext context) {
-
-    final calInfo = ref.watch(calProvider);
-
-    // View changing
+    final CalendarController calController = CalendarController();
     final view = ref.watch(viewProvider.select((value) => value));
     calController.view = view;
 
-    return calInfo.when(
-      data: (item) =>
-        SfCalendar(
+    return StreamBuilder<List<Meeting>>(
+      stream: meetingStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasData) {
+          // Use a custom data source with the list of meetings
+          MeetingDataSource dataSource = MeetingDataSource(snapshot.data!);
+
+        return SfCalendar(
           view: view,
           controller: calController,
           timeZone : 'Mountain Standard Time',
-          dataSource: MeetingDataSource(calInfo.value!),
+          dataSource: dataSource,
           headerStyle: const CalendarHeaderStyle(
             textAlign: TextAlign.center,
           ),
@@ -102,8 +134,10 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
             appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
           ),
 
-          timeSlotViewSettings: const TimeSlotViewSettings( 
-            numberOfDaysInView: 1
+          timeSlotViewSettings: TimeSlotViewSettings( 
+            numberOfDaysInView: 1,
+            timeIntervalHeight: 100,
+            timeTextStyle: Theme.of(context).textTheme.bodyMedium
           ),
 
           scheduleViewSettings: const ScheduleViewSettings(
@@ -112,109 +146,87 @@ class _CalWidgetState extends ConsumerState<CalWidget>{
               fontSize: 20,
             ),
           ),
-        ),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, st) => Center(child: Text(e.toString())),
-            );
+
+          onTap: (CalendarTapDetails details) {
+          if (details.appointments != null &&
+              details.targetElement == CalendarElement.appointment) {
+            final Appointment appointment = details.appointments!.first;
+            if (appointment is Meeting) {
+            final Meeting meeting = appointment;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NewTaskView(meeting: meeting)),
+            );}
+          }
+        },
+        );
+        } else {
+          return Text('No data available');
+        }
+      },
+      // loading: () => const Center(child: CircularProgressIndicator()),
+      // error: (e, st) => Center(child: Text(e.toString())),
+    );
   }
 }
 
-class AppointmentDataSource extends CalendarDataSource {
-  AppointmentDataSource(List<Appointment> source) {
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index) {
-    return appointments![index].from;
-  }
-
-  @override
-  DateTime getEndTime(int index) {
-    return appointments![index].to;
-  }
-
-  @override
-  String getSubject(int index) {
-    return appointments![index].eventName;
-  }
-
-  @override
-  Color getColor(int index) {
-    return appointments![index].background;
-  }
-
-  @override
-  bool isAllDay(int index) {
-    return appointments![index].isAllDay;
-  }
+// Convert color string to hex value
+Color parseColor(String colorString){
+  String hex = colorString.replaceAll("#", "");
+  int value = int.parse(hex, radix: 16);
+  return Color(value).withAlpha(255);
 }
 
-class CalendarData {
-  Future<List<Meeting>> loadAppointmentsFromSupabase() async {
-    final chunkData = await supabase
-        .from('chunks')
-        .select('summary, start_time, end_time, isallday, vrecur');
+Stream<List<Meeting>> streamMeetings() {
 
-    List<Meeting> chunks = chunkData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
+  final chunkStream = supabase.from('chunks').stream(primaryKey: ['id']);
 
-    final eventData = await supabase
-        .from('events')
-        .select('summary, start_time, end_time, isallday, vrecur');
+   Stream<List<Map<String, dynamic>>> transformedChunkStream =
+      chunkStream.map((list) {
+    return list.map((chunk) {
+      chunk['summary'] = chunk['display_name'];
+      chunk['color'] = parseColor(chunk['color']);
+      return chunk;
+    }).toList();
+  });
 
-    List<Meeting> events = eventData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
+  final eventStream = supabase.from('events').stream(primaryKey: ['class_id']);
 
-    final meetings = chunks + events;
-    // final List<Meeting> appointments = [];
+  Stream<List<Map<String, dynamic>>> transformedEventStream =
+      eventStream.map((list) {
+    return list.where((event) => event['summary'] != 'Sleep').map((event) {
+      event['id'] = event['class_id'];
+      event['color'] = parseColor(event['color']);
+      return event;
+    }).toList();
+  });
 
-    // for (final appointmentData in response) {
-    //   String startDtStr = appointmentData['starttime'];
-    //   String endDtStr = appointmentData['endtime'];
-    //   DateTime startTime = DateTime.parse(startDtStr);
-    //   DateTime endTime = DateTime.parse(endDtStr);
-    //   String subject = appointmentData['title'] ?? '';
-    //   bool isAllDay = appointmentData['isallday'] ?? false;
-    //   String recurrenceRule = appointmentData['vrecur'] ?? '';
-    //   Color color = Colors.blue; // Assuming all appointments have the same color for simplicity
+  Stream<List<Meeting>> combinedStream = Rx.combineLatest2(
+    transformedChunkStream,
+    transformedEventStream,
+    (List<Map<String, dynamic>> list1, List<Map<String, dynamic>> list2) {
+      // Combine the lists from each stream and convert each Map to a Meeting
+      return [...list1, ...list2]
+          .map((eventJson) => Meeting.fromJson(eventJson))
+          .toList();
+    },
+  );
 
-    //   appointments.add(Meeting(
-    //     startTime: startTime,
-    //     endTime: endTime,
-    //     description: ,
-    //     isAllDay: isAllDay,
-    //   ));
-    // }
-    return meetings;
-  }
 
-  // Helper function to format the time zone offset as a string
-  // String _formatTimeZoneOffset(Duration offset) {
-  //   String sign = offset.isNegative ? "-" : "+";
-  //   int hours = offset.inHours.abs();
-  //   int minutes = (offset.inMinutes.abs() % 60);
-  //   return "$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}";
-  // }
+  // List<Map<String, dynamic>> transformedEventData = eventStream.map<Map<String, dynamic>>((event) {
+  //   return {
+  //     'id': event['class_id'],  // Aliasing 'class_id' to 'id'
+  //     'summary': event['summary'],
+  //     'description': event['description'],
+  //     'start_time': event['start_time'],
+  //     'end_time': event['end_time'],
+  //   };
+  // }).toList();
 
-  // DateTime _supabaseToFlutterDateTime(String dateTimeStr) {
-  // // Replace the space with 'T' and remove the dot in the timezone offset
-  // String isoDateTimeStr = dateTimeStr.replaceAll(' ', 'Z').replaceAll('.00', ':00');
+  // List<Meeting> events =
+  //     transformedEventData.map((eventJson) => Meeting.fromJson(eventJson)).toList();
 
-  // // Now the string should be in a format that DateTime.parse can handle
-  // DateTime dateTime = DateTime.parse(isoDateTimeStr);
-
-  // return dateTime;
-
-  // }
+  // final meetings = chunks + events;
+  return combinedStream;
 }
-
-final calData = Provider(
-  (ref) => CalendarData(),
-);
-
-final calProvider = FutureProvider(
-  (ref) {
-    final cal = ref.read(calData);
-
-    return cal.loadAppointmentsFromSupabase();
-  },
-);

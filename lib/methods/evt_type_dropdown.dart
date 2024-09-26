@@ -8,17 +8,25 @@
 
 import 'package:flutter/material.dart';
 
-const List<String> list = <String>['Exam','HW', 'Quiz', 'Midterm', 'Lab', 'Final',  'Project', 'Study'];
+const List<String> list = <String>['hw', 'quiz', 'midterm', 'lab', 'final', 'project', 'study'];
 
 class EventTypeDropdown extends StatefulWidget {
-  const EventTypeDropdown({super.key});
+  final String? initialValue;
+  final ValueChanged<String>? onChanged;
+  const EventTypeDropdown({super.key, this.initialValue, this.onChanged});
 
   @override
   State<EventTypeDropdown> createState() => _EventTypeDropdownState();
 }
 
 class _EventTypeDropdownState extends State<EventTypeDropdown> {
-  String dropdownValue = list.first;
+  late String dropdownValue;
+
+  @override
+  void initState() {
+    super.initState();
+    dropdownValue = widget.initialValue ?? list.first;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +34,11 @@ class _EventTypeDropdownState extends State<EventTypeDropdown> {
       items: list.map<DropdownMenuItem>((String value) {
         return DropdownMenuItem(value: value, child: Text(value));
       }).toList(), 
-      onChanged: (value) => {
+      onChanged: (value) {
         setState(() {
-          dropdownValue = value;
-        })
+          dropdownValue = value!;
+        });
+        widget.onChanged?.call(value!);
       },
       hint: const Text('Type'),
       icon: const Icon(Icons.list),

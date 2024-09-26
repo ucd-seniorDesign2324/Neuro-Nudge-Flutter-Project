@@ -14,7 +14,9 @@ enum RecurrenceType { none, daily, weekly, monthly, yearly }
 
 // RecurrencePicker StatefulWidget
 class RecurrencePicker extends StatefulWidget {
-  const RecurrencePicker({Key? key}) : super(key: key);
+  final Function(RecurrenceType, int, Set<int>, DateTime?) onRecurrenceChanged;
+
+  const RecurrencePicker({Key? key, required this.onRecurrenceChanged}) : super(key: key);
 
   @override
   _RecurrencePickerState createState() => _RecurrencePickerState();
@@ -28,6 +30,10 @@ class _RecurrencePickerState extends State<RecurrencePicker> {
   final Set<int> _selectedDaysOfWeek = {};
   DateTime? _untilDate;
 
+  void _updateRecurrence() {
+    widget.onRecurrenceChanged( _selectedRecurrence, _interval, _selectedDaysOfWeek, _untilDate);
+  }
+
   // Widget to build day of week picker
   Widget _buildDayOfWeekPicker() {
     const List<String> days = ["S", "M", "T", "W", "T", "F", "S"];
@@ -40,6 +46,7 @@ class _RecurrencePickerState extends State<RecurrencePicker> {
           } else {
             _selectedDaysOfWeek.add(index);
           }
+          
         });
       },
       children: List.generate(7, (index) => Text(days[index])),

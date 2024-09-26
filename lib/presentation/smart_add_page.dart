@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+
+
+
+
+
+
 import 'package:nn/presentation/new_task_view.dart';
+import 'package:nn/controller/meeting.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -13,29 +20,64 @@ class SmartAddPage extends StatefulWidget {
 class _SmartAddPageState extends State<SmartAddPage> {
   final TextEditingController _controller = TextEditingController();
 
-  Future<void> _sendForParsing() async {
-    // Your API endpoint
-    const String url = 'https://yourapi.com/parse-event';
+Future<void> _sendForParsing() async {
+    // final url = Uri.parse('http://10.26.236.235:8000/smart-add-process');
+    final url = Uri.parse('http://10.0.2.2:8000/smart-add-process');
+    final text = _controller.text + "Current Date: " + DateTime.now().toIso8601String();
+    try {
+      final response = await http.post(url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'inputString': text}));
 
-    // API call using the user's input
-    final response = await http.post(Uri.parse(url), body: {
-      'eventText': _controller.text,
-    });
+      if (response.statusCode == 200) {
+        // Directly decode the response body assuming it's a JSON string encapsulating a JSON object.
+        final decodedResponse = jsonDecode(response.body);
+        if (decodedResponse is String) {
+          // If the decoded response is a string, decode it once more.
+          final Map<String, dynamic> eventDetails = jsonDecode(decodedResponse);
+          processEventDetails(eventDetails);
+        } else if (decodedResponse is Map<String, dynamic>) {
+          // If the decoded response is already a Map, use it directly.
+          processEventDetails(decodedResponse);
+        }
+      } else {
+        print('Request failed with status: ${response.statusCode}.');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('An error occurred: $e');
+    }
+  }
 
-    if (response.statusCode == 200) {
-      // Assuming the response is a JSON
-      final Map<String, dynamic> eventDetails = json.decode(response.body);
-
-      // Redirect to Manual Add Page with the event details
+  void processEventDetails(Map<String, dynamic> eventDetails) {
+    try {
+      Meeting newMeeting = Meeting.fromJson(eventDetails);
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          //builder: (context) => NewTaskView(eventDetails: eventDetails)
-          builder: (context) => NewTaskView(),
-        ),
-      );
-    } else {
-      // Handle the error or show an error message
+          context,
+          MaterialPageRoute(
+              builder: (context) => NewTaskView(meeting: newMeeting)));
+    } catch (e) {
+      print('Error processing event details: $e');
+    }
+  }
+
+
+
+  Map<String, dynamic> _parseJsonLikeString(String input) {
+    // Adding double quotes around keys
+    String corrected = input.replaceAllMapped(
+        RegExp(r'(\w+)(:)', multiLine: true), (Match m) => '"${m[1]}":');
+
+    // Adding double quotes around string values that are not already quoted
+    corrected = corrected.replaceAllMapped(
+        RegExp(r':\s*([a-zA-Z_]\w*)'), (Match m) => ': "${m[1]}"');
+
+    // Try to decode to JSON
+    try {
+      return jsonDecode(corrected);
+    } catch (e) {
+      print('Error decoding JSON: $e');
+      return {};
     }
   }
 

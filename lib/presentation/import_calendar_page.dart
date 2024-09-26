@@ -9,6 +9,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:nn/data/python_api.dart';
+import 'package:nn/presentation/home_page.dart';
 
 // Define a StatelessWidget for importing calendar page
 class ImportCalendarPage extends StatelessWidget {
@@ -64,8 +65,12 @@ class ImportCalendarPage extends StatelessWidget {
                     label: const Text("Upload .ics file"),
                     icon: const Icon(Icons.calendar_month_outlined),
                     style:  Theme.of(context).outlinedButtonTheme.style,
-                    onPressed: () {
-                      importEvents();
+                    onPressed: () async {
+                      await loadICSRequest();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      );
                     },
                   ),
                 ),
