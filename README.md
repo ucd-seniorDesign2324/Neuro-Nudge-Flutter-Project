@@ -1,26 +1,27 @@
-# NeuroNudge
-
-Autonomous Time Blocking Task Scheduler
-
-## Description
-
-The application integrates with Google Calendar to sync existing commitments like classes and appointments, then retrieves students' tasks and deadlines. It automatically sorts tasks by priority, considering factors like due dates, task length, and importance, and identifies empty time slots in the calendar. Using time blocking, it schedules tasks in available slots based on their urgency, helping students, especially those with ADHD, focus and stay organized. The app sends reminders for tasks and adjusts dynamically when new tasks are added. Additionally, it categorizes tasks and uses machine learning to personalize and optimize the schedule based on user habits and productivity.
-
-## Authors
-
-- Brain Hagerty
-- Jake McKnight
-- Wesley Johnson
-- Matthew Ward
-
-
-
 
 # NeuroNudge
 
 ---
 
 ***A linear schedule and personal reminder system for autonomous time-blocking and task prioritization to assist students with ADHD.***
+
+---
+
+## Authors
+
+- Brain Hagerty
+  - [GitHub](https://github.com/CashBandicoot)
+  - [LinkedIn](https://www.linkedin.com/in/brian-hagerty-ba3699119/)
+- Jake McKnight
+  - [GitHub](https://github.com/mcknijak)
+  - [LinkedIn](https://www.linkedin.com/in/jake-mcknight/)
+- Wesley Johnson
+  - [GitHub](https://github.com/DiscoKoala)
+  - [LinkedIn](https://www.linkedin.com/in/wesley-b-johnson/)
+- Matthew Ward
+  - [GitHub](https://github.com/MWARDUNI)
+  - [LinkedIn](https://www.linkedin.com/in/m4tth3w-w4rd/)
+
 
 Problem:
 
@@ -30,6 +31,8 @@ Problem:
 Solution:
 
 > A proactive system that handles time-blocking, task tracking/prioritization, schedule building, and reminder system for the user.
+
+> The application integrates with Google Calendar to sync existing commitments like classes and appointments, then retrieves students' tasks and deadlines. It automatically sorts tasks by priority, considering factors like due dates, task length, and importance, and identifies empty time slots in the calendar. Using time blocking, it schedules tasks in available slots based on their urgency, helping students, especially those with ADHD, focus and stay organized. The app sends reminders for tasks and adjusts dynamically when new tasks are added. Additionally, it categorizes tasks and uses machine learning to personalize and optimize the schedule based on user habits and productivity.
 
 
 Mission Statement:
@@ -507,13 +510,13 @@ Do any requirements conflict with other requirements?
 - [x] Low-Level Design (LLD):
   - [x] Component Design: detailed functionality for components/modules defined in the HLD.
   - [x] Data Model Design:
-    - [ ] Create UML diagram, database schemas, ER(R) diagrams, and specify data flow.
-- [ ] Algorithm Selection/Design:
-  - [ ] Validate choices
-  - [ ] Verify success
+    - [x] Create UML diagram, database schemas, ER(R) diagrams, and specify data flow.
+- [x] Algorithm Selection/Design:
+  - [x] Validate choices
+  - [x] Verify success
 - [x] Interface Design: Define APIs, protocols, and data formats.
-- [ ] UI/UX Design: layouts, colors, and graphics.
-  - [ ] Verify w/ Stakeholders
+- [x] UI/UX Design: layouts, colors, and graphics.
+  - [x] Verify w/ Stakeholders
 
 ### Week 12
 
@@ -522,13 +525,13 @@ Do any requirements conflict with other requirements?
 ***Meeting w/ Dave 11.06***
 
 *Tasks for the Week Ahead*
-- [ ] Prototyping:
-  - [ ] Create mockup or prototype of the software. Clickable interface or minimal version of the software to visualize the design and user flow.
-- [ ] Design Review:
-  - [ ] Conduct design review sessions with peers, technical experts, and stakeholders.
-  - [ ] Validate the design against the requirements to ensure that it addresses all needs.
-  - [ ] Identify potential flaws, bottlenecks, or areas for optimization.
-- [ ] Design Documentation:
+- [x] Prototyping:
+  - [x] Create mockup or prototype of the software. Clickable interface or minimal version of the software to visualize the design and user flow.
+- [x] Design Review:
+  - [x] Conduct design review sessions with peers, technical experts, and stakeholders.
+  - [x] Validate the design against the requirements to ensure that it addresses all needs.
+  - [x] Identify potential flaws, bottlenecks, or areas for optimization.
+- [x] Design Documentation:
   - [x] Document the design decisions, architecture, data models, interfaces, etc.
 
 ### Week 13
@@ -538,9 +541,9 @@ Do any requirements conflict with other requirements?
 ***Meeting w/ Dave 11.13***
 
 *Tasks for the Week Ahead*
-- [ ] Implementation:
+- [x] Implementation:
   - [x] Development/coding phase.
-  - [ ] Test
+  - [x] Test
 
 ### Week 14
 
@@ -549,9 +552,9 @@ Do any requirements conflict with other requirements?
 ***Fall Break: No Days Off***
 
 *Tasks for the Week Ahead*
-- [ ] Implementation Continued:
+- [x] Implementation Continued:
   - [x] Development/coding phase continued.
-  - [ ] Test
+  - [x] Test
 
 ## December
 
@@ -565,9 +568,9 @@ Do any requirements conflict with other requirements?
 - *We will have a lot of work done to show Dave*
 
 *Tasks for the Week Ahead*
-- [ ] Testing Considerations:
-  - [ ] Test components.
-  - [ ] Identify areas where unit tests, integration tests, and system tests will be necessary.
+- [x] Testing Considerations:
+  - [x] Test components.
+  - [x] Identify areas where unit tests, integration tests, and system tests will be necessary.
 
 ### Week 16
 
@@ -575,13 +578,13 @@ Do any requirements conflict with other requirements?
 
 ***Meeting w/ Dave?***
 
-- [ ] MVP
+- [x] MVP
 
 ## January
 
-- [ ] Meet w/ Dave
-- [ ] Meet w/ Stakeholders
-- [ ] Review, Refine, Repeat
+- [x] Meet w/ Dave
+- [x] Meet w/ Stakeholders
+- [x] Review, Refine, Repeat
 
 ## February
 
@@ -589,13 +592,13 @@ Do any requirements conflict with other requirements?
 
 ## April
 
-- [ ] Finalize implementation
-- [ ] Prepare presentation
+- [x] Finalize implementation
+- [x] Prepare presentation
 
 ## May
 
-- [ ] Presentation - 5/1-5/3?
-- [ ] Win
+- [x] Presentation - 5/1-5/3?
+- [x] Win!
 
 ---
 
@@ -633,9 +636,7 @@ Send nudges to remind the users when it’s time to start a new task or take a b
    - Over time, the application may use machine learning to optimize your schedule based on your habits, preferences, and past productivity data.
    - In doing so, it can provide a more personalized and effective time-blocking schedule.
    
-   
-   
-   
+---
 
 # Technology Stack for Neuro-Nudge App
 
@@ -705,11 +706,9 @@ Send nudges to remind the users when it’s time to start a new task or take a b
 - **Version Control:** Git with GitHub
 - **Project Management:** [GitHub Orgs: UCD Senior Design ’23/’24](https://github.com/orgs/ucd-seniorDesign2324/projects)
 
-
-
+---
 
 # High Level Design
-
 
 ## Client Side (Flutter)
 
@@ -780,10 +779,7 @@ Send nudges to remind the users when it’s time to start a new task or take a b
 ## Nice-to-Haves
 - **[Knowledge Retrieval](https://platform.openai.com/docs/assistants/tools/knowledge-retrieval):** Augments the OpenAI Assistant API with knowledge from outside the model (e.g. documents provided by the user, automatically chunk your docs,, index, and store the embeddings, and implement a vectorDB to retrieve content to answer user queries).
 
-
-
-Page 09 - Components and Modules
-
+---
 
 # Neuro-Nudge - App Components Breakdown with Voice Control
 
@@ -850,9 +846,9 @@ Page 09 - Components and Modules
 4. **Dynamic Rescheduling:** System adjusts to new inputs and voice commands.
 5. **Learning and Adaptation:** Optimizes future scheduling based on user behavior and voice command patterns.
 
+---
 
-
-XX. Citations & Research
+# XX. Citations & Research
 
 
 ***rough draft, not finalized and/or not all sources used for project at this time***
