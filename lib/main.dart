@@ -1,34 +1,54 @@
+/*
+  This Dart code is the entry point of a Flutter application. 
+  It initializes Supabase with credentials and signs in with a username and password. 
+  Once authenticated, it runs the application with the MyApp widget as the root of the widget tree. 
+  The MyApp widget is a MaterialApp that sets up the application title, theme, and initial route to the HomePage.
+ */
+
 import 'package:flutter/material.dart';
-import 'package:nn/home_page.dart';
+import 'package:nn/presentation/home_page.dart';
+import 'package:nn/presentation/theme.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() => runApp(const MyApp());
+// Entry point of the application
+void main() async {
 
+  WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
+  Supabase.initialize(
+    url: 'https://fgocfoakntmlhgtftrzh.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnb2Nmb2FrbnRtbGhndGZ0cnpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTE2ODkyMTUsImV4cCI6MjAyNzI2NTIxNX0.s5dAWy-DSa1EBfKjhpGOOcax6S7QUsh7xCHPFgKlBn8',
+    realtimeClientOptions: const RealtimeClientOptions(
+      eventsPerSecond: 2,
+    )
+  );
+
+  // Sign in with Supabase credentials
+  final AuthResponse res = await supabase.auth.signInWithPassword(
+    email: 'neuro.nudger@gmail.com',
+    password: 'Vatican1-Cameos3',
+  );
+  final Session? session = res.session; // Session after sign-in
+  final User? user = res.user; // User information
+
+  // Run the application with ProviderScope
+  runApp(const ProviderScope(child: MyApp()));
+}
+
+final supabase = Supabase.instance.client; // Supabase client instance
+
+// Main application widget
 class MyApp extends StatelessWidget {
-
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
-  Widget build(BuildContext context){
-    const String appTitle = 'Neuro Nudge';
+  Widget build(BuildContext context) {
+    const String appTitle = 'Neuro Nudge'; // Application title
     return MaterialApp(
-      
-      
       title: appTitle,
-
-      
-      // Basic theme. Will be modified down the road.
-      theme: ThemeData(
-        fontFamily: 'Poppins',
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        cardTheme: CardTheme(color: Colors.blue.shade50),
-        useMaterial3: true,
-      ),
-
-
-      debugShowCheckedModeBanner: false,
-
-
-      home: HomePage(items: List<String>.generate(10000, (i) => 'Item $i')),
+      theme: appThemeData, // Application theme
+      debugShowCheckedModeBanner: false, // Disable debug banner
+      home: const HomePage(), // Initial route is HomePage
     );
   }
 }

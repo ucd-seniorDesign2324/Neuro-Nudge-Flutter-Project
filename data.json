@@ -1,0 +1,16 @@
+{"type":"DAYLIGHT",
+ "dtstart":{"dt":"19700308T020000"},
+ "rrule":"FREQ=YEARLY;BYMONTH=3;BYDAY=2SU"},
+ {"type":"STANDARD",
+ "dtstart":{"dt":"19701101T020000"},
+ "rrule":"FREQ=YEARLY;BYMONTH=11;BYDAY=1SU"},
+ {"type":"VTIMEZONE"},
+ {"type":"VEVENT",
+ "dtstart":{"dt":"20240115T140000","tzid":"America/Denver"},
+ "dtend":{"dt":"20240115T151500","tzid":"America/Denver"},
+ "rrule":"FREQ=WEEKLY;WKST=SU;UNTIL=20240516T055959Z;BYDAY=MO,WE",
+ "dtstamp":{"dt":"20240328T012528Z"},
+ "uid":"1hjt21vpaq149h4djgmcheidre@google.com",
+ "created":{"dt":"20240226T203918Z"},
+ "description":"Grade Distribution:<br><table><thead><tr><th><strong><b>Item</b></strong></th><th><strong><b>Weight</b></strong></th></tr></thead><tbody><tr><td>Midterm Exam</td><td>20%</td></tr><tr><td>Final Exam</td><td>20%</td></tr><tr><td>HW / Lab Assignments</td><td>20%</td></tr><tr><td>Class Project</td><td>40%<br></td></tr></tbody></table>    <br><span>Letter"}
+ 
